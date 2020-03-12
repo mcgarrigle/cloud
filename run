@@ -1,0 +1,32 @@
+
+virt-install \
+  --name tst \
+  --memory 1024 \
+  --vcpus 1 \
+  --disk CentOS-7-x86_64-GenericCloud-1907.qcow2c,device=disk \
+  --os-type Linux \
+  --os-variant centos7.0 \
+  --virt-type kvm \
+  --graphics none \
+  --network default \
+  --import
+
+# virt-install \
+  # --virt-type qemu \
+  # --arch x86_64 \ 
+  # --name tst \
+  # --disk CentOS-7-x86_64-GenericCloud-1907.qcow2c \
+  # --os-type Linux \
+  # --os-variant centos7.0 \
+  # --virt-type kvm \
+  # --graphics none \
+  # --network default \
+  # --import
+
+# Virtualisation Platform Options:
+#   -v, --hvm             This guest should be a fully virtualised guest
+#   -p, --paravirt        This guest should be a paravirtualised guest
+#   --container           This guest should be a container guest
+#   --virt-type HV_TYPE   Hypervisor name to use (kvm, qemu, xen, ...)
+#   --arch ARCH           The CPU architecture to simulate
+#   --machine MACHINE     The machine type to emulate
