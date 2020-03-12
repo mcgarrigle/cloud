@@ -1,15 +1,22 @@
+#!/bin/bash
+
+image="$1"
+name="$2"
+machine="machines/${name}.qcow2c"
+
+cp "index/${image}" "${machine}"
 
 virt-install \
-  --name tst \
+  --import \
+  --name "${name}" \
   --memory 1024 \
   --vcpus 1 \
-  --disk CentOS-7-x86_64-GenericCloud-1907.qcow2c,device=disk \
+  --disk ${machine},device=disk \
   --os-type Linux \
   --os-variant centos7.0 \
   --virt-type kvm \
   --graphics none \
-  --network default \
-  --import
+  --network default
 
 # virt-install \
   # --virt-type qemu \
