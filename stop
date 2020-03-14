@@ -1,0 +1,4 @@
+#!/bin/bash
+
+virsh destroy --domain $1
+virsh undefine --domain $1

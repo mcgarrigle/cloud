@@ -1,0 +1,10 @@
+#cloud-config
+
+users:
+  - name: cloud
+    groups: users
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    passwd: $6$C1gZA0SBFc3B0mtQ$FOgRK1HHteW1ar1ZNSSXGair3VdKUdcMsCq9Vp7YthlpicLSL/tEhBocCEZ0PnKjJvy7Y7L7MF2XO/YaDAlnA/
+    ssh_authorized_keys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCmHLCY/2YQIhYaj3MVMhfPVbw9YhxtQqVSIW49bqN3VIVLfUQtKD9qe1gVp28PWJcCuoixSvbm7ufwhWXX7yfRvKqdypvrjvX+ylfMcLW1xtN4z3BIu8KDnoquQiXyyNNcMEXoln2+vt3IJKpSbsdI1tutlkC1qvmVU5LDKNd4zOacRhd5O7WDE3u3UFJHvfV58qRm8USMeYg9UJO6cqcx6Y5c3LbY4kUvjS/Z/jFpqxIdYVAUXs/SMpzv80iyIJhE+bxhbcC98y8fhzVB5iMsRDC7sgR6P4PX/puBP4VuXzjRBTATSTC1PllvMsG5fp44n+WuzFFxvJou+XmkshYn pete@mac.local
