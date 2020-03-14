@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import yaml
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+
+from cloud.command import Command
 
 def load_config():
     try:
@@ -17,11 +22,9 @@ def command(cmd, rest):
     for (name, guest) in config['guests'].items():
         print(name, guest)
 
-def help():
-    print("help")
-
 if __name__ == "__main__":
+    cmd = Command()
     if len(sys.argv) == 1:
-        help()
+        cmd.help()
     else:
-        command(sys.argv[1], sys.argv[2:])
+        cmd.run(sys.argv[1], sys.argv[2:])
