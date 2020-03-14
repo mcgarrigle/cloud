@@ -5,6 +5,7 @@ class Command:
 
     def __init__(self):
         self.action = Action()
+        self._ls = self._list
 
     def help(self, args = []):
         print("help", args)

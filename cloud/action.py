@@ -20,3 +20,6 @@ class Action:
     def list(self):
         for (name, guest) in self.guests():
             print(name, guest) 
+    def list(self):
+        for (name, guest) in self.guests():
+            print(name, guest) 
