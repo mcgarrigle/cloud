@@ -18,8 +18,9 @@ virt-install \
   --os-type Linux \
   --os-variant centos7.0 \
   --virt-type kvm \
+  --network default \
   --graphics none \
-  --network default
+  --noautoconsole
 
 # virt-install \
   # --virt-type qemu \
