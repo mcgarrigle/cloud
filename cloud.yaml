@@ -1,0 +1,15 @@
+version: '1'
+
+project: foo
+
+guests:
+  puppet:
+    hostname: puppet.local
+    image: centos7
+    memory: 1G
+    disk: 10G
+  server1:
+    hostname: server1.local
+    image: centos7
+    memory: 1G
+    disk: 10G

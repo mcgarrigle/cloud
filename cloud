@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+
+import sys
+import yaml
+
+def load_config():
+    try:
+        with open('cloud.yaml') as f:
+            return yaml.safe_load(f)
+    except:
+        print("cannot open cloud.yaml")
+        exit(1)
+
+def command(cmd, rest):
+    print(f"command {cmd}")
+    config = load_config()
+    for (name, guest) in config['guests'].items():
+        print(name, guest)
+
+def help():
+    print("help")
+
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        help()
+    else:
+        command(sys.argv[1], sys.argv[2:])
