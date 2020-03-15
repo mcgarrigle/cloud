@@ -20,7 +20,7 @@ class Command:
     def guests(self):
       return self.config['guests'].items()
 
-    def help(self, args = []):
+    def _help(self, args = []):
         print("help", args)
 
     def _list(self, args):
