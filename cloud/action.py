@@ -9,3 +9,8 @@ class Action:
     def up(self, guest):
         print("up", guest)
         self.hypervisor.create(guest)
+
+    def down(self, guest):
+        print("up", guest)
+        self.hypervisor.destroy(guest)
+

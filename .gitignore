@@ -3,3 +3,4 @@
 *.qcow*
 machines/*
 index/*
+metadata/meta-data

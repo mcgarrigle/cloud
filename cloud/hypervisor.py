@@ -1,12 +1,15 @@
 
-import os
-import re
-import yaml
+import os, re, yaml
+import secrets
 
 class Hypervisor:
 
     def __init__(self):
         pass
+
+    def write(self, path, data):
+        with open(path, 'w') as f:
+            f.write(yaml.dump(data))
 
     def parameter(self, s):
         return "--" + re.sub(r'\d$', '', s)
@@ -20,6 +23,11 @@ class Hypervisor:
         os.system(f"cp {path} {instance}")
 
     def create_metadata(self, metadata, guest):
+        data = {
+            'instance-id': secrets.token_hex(15),
+            'local-hostname': guest['name']
+        }
+        self.write("metadata/meta-data", data)
         os.system(f"genisoimage -input-charset utf-8 -output {metadata} -volid cidata -joliet -rock metadata/user-data metadata/meta-data")
 
     def create(self, guest):
@@ -43,5 +51,9 @@ class Hypervisor:
         }
         args = ["virt-install", "--import", "--noautoconsole"] + self.argv(args)
         command = ' '.join(args) 
-        print(command)
         os.system(command)
+
+    def destroy(self, guest):
+        domain = guest['name']
+        os.system(f"virsh destroy --domain {domain}")
+        os.system(f"virsh undefine --domain {domain}")

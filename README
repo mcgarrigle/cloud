@@ -1,0 +1,5 @@
+dnf install epel-release
+dnf install python3
+dnf install qemu-kvm
+yum install libvirt
+dnf install virt-install

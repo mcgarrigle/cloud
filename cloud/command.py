@@ -32,6 +32,10 @@ class Command:
         for guest in self.guests:
             self.action.up(guest)
 
+    def _down(self, args):
+        for guest in self.guests:
+            self.action.down(guest)
+
     def run(self, cmd, args):
         try:
             method = f"self._{cmd}"
