@@ -25,12 +25,10 @@ class Command:
         print("help", args)
 
     def _list(self, args):
-        print("list", args)
         for guest in self.guests:
             print(guest)
 
     def _up(self, args):
-        print("up", args)
         for guest in self.guests:
             self.action.up(guest)
 

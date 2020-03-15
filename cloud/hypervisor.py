@@ -20,7 +20,7 @@ class Hypervisor:
         os.system(f"cp {path} {instance}")
 
     def create_metadata(self, metadata, guest):
-        os.system(f"genisoimage -output {metadata} -volid cidata -joliet -rock metadata/user-data metadata/meta-data")
+        os.system(f"genisoimage -input-charset utf-8 -output {metadata} -volid cidata -joliet -rock metadata/user-data metadata/meta-data")
 
     def create(self, guest):
         name = guest['name']
@@ -35,13 +35,13 @@ class Hypervisor:
             'vcpus': '1', 
             'disk0': f"{machine},device=disk",
             'disk1': f"{metadata},device=cdrom",
+            'virt-type': 'kvm', 
             'os-type': 'Linux', 
             'os-variant': 'centos7.0', 
-            'virt-type': 'kvm', 
             'network': 'default', 
             'graphics': 'none' 
         }
-        print(self.argv(args))
-        command = ["virt-install", "--import", "--noautoconsole"] + self.argv(args)
+        args = ["virt-install", "--import", "--noautoconsole"] + self.argv(args)
+        command = ' '.join(args) 
         print(command)
-        os.system(' '.join(command))
+        os.system(command)
