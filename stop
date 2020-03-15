@@ -1,4 +1,6 @@
 #!/bin/bash
 
-virsh destroy --domain $1
-virsh undefine --domain $1
+for domain in $@; do
+  virsh destroy --domain $domain
+  virsh undefine --domain $domain
+done

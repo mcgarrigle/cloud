@@ -1,10 +1,11 @@
 
-import yaml
+from cloud.hypervisor import Hypervisor
 
 class Action:
 
     def __init__(self):
-        pass
+        self.hypervisor = Hypervisor()
 
-    def up(self, name, guest):
-        print("up", name, guest)
+    def up(self, guest):
+        print("up", guest)
+        self.hypervisor.create(guest)
