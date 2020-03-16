@@ -1,0 +1,24 @@
+#!/usr/bin/python3
+
+import libvirt
+conn = libvirt.open()
+
+def state(s):
+    sw = {
+        libvirt.VIR_DOMAIN_NOSTATE: 'none',
+        libvirt.VIR_DOMAIN_RUNNING: 'running',
+        libvirt.VIR_DOMAIN_BLOCKED: 'blocked',
+        libvirt.VIR_DOMAIN_PAUSED: 'paused',
+        libvirt.VIR_DOMAIN_SHUTDOWN: 'shutdown',
+        libvirt.VIR_DOMAIN_SHUTOFF: 'shutoff',
+        libvirt.VIR_DOMAIN_CRASHED: 'crashed',
+        libvirt.VIR_DOMAIN_PMSUSPENDED: 'suspended',
+    }
+    return sw.get(s[0], "unknown")
+
+for domain in conn.listAllDomains():
+    #metadata = domain.metadata(libvirt.VIR_DOMAIN_METADATA_ELEMENT, "http://spinup.io/instance")
+    nic = domain.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)
+    n = next(iter(nic)) 
+    ip = nic[n]['addrs'][0]['addr']
+    print(domain.name(),state(domain.state()), ip)
