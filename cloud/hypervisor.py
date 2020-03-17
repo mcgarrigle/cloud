@@ -30,14 +30,14 @@ class Hypervisor:
         guest.update(image)
         instance = os.path.join(ROOT, 'machines', guest['name'] + '.' + image['format'])
         guest['instance'] = instance
-        os.system(f"qemu-img create -f qcow2 -b {image['path']} {instance} 10G")
+        os.system(f"qemu-img create -f qcow2 -b {image['path']} {instance} {guest['disk']}")
 
     def create_metadata(self, guest):
         metadata = os.path.join(ROOT, 'machines', guest['name'] + '.iso')
         guest['metadata'] = metadata
         data = {
             'instance-id': secrets.token_hex(15),
-            'local-hostname': guest['name']
+            'local-hostname': guest.get('hostname', guest['name'])
         }
         self.write("metadata/meta-data", data)
         os.system(f"genisoimage -input-charset utf-8 -output {metadata} -volid cidata -joliet -rock metadata/user-data metadata/meta-data")
@@ -48,16 +48,16 @@ class Hypervisor:
         self.create_metadata(guest)
         print(guest)
         args = { 
-            'name': guest['name'],
-            'memory': '1024', 
-            'vcpus': '1', 
-            'disk0': f"{guest['instance']},device=disk",
-            'disk1': f"{guest['metadata']},device=cdrom",
             'virt-type': 'kvm', 
-            'os-type': 'Linux', 
-            'os-variant': 'centos7.0', 
-            'network': 'default', 
-            'graphics': 'none' 
+            'name':       guest['name'],
+            'memory':     guest.get('memory', '1024'),
+            'vcpus':      guest.get('cores', '1'), 
+            'disk0':      guest['instance'] + ",device=disk",
+            'disk1':      guest['metadata'] + ",device=cdrom",
+            'os-type':    guest['os-type'],
+            'os-variant': guest['os-variant'],
+            'network':    guest.get('network', 'default'),
+            'graphics':   'none' 
         }
         args = ["virt-install", "--import", "--noautoconsole"] + self.argv(args)
         os.system(' '.join(args))

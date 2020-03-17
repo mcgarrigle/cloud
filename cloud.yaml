@@ -6,10 +6,12 @@ guests:
   puppet:
     hostname: puppet.local
     image: centos7
-    memory: 1G
-    disk: 10G
+    cores: 2
+    memory: 2048
+    disk: 20G
   server1:
     hostname: server1.local
+    cores: 1
     image: centos7
-    memory: 1G
+    memory: 1024
     disk: 10G
