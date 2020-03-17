@@ -2,10 +2,16 @@
 import os, re, yaml
 import secrets
 
+ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
 class Hypervisor:
 
     def __init__(self):
         pass
+
+    def read(self, path):
+        with open(path, 'r') as f:
+            return yaml.safe_load(f.read())
 
     def write(self, path, data):
         with open(path, 'w') as f:
@@ -18,11 +24,17 @@ class Hypervisor:
         params = [ (self.parameter(k), str(v)) for (k, v) in args.items() ]
         return [y for x in params for y in x]
 
-    def create_instance(self, image, instance):
-        path = os.path.join("index", image)
-        os.system(f"cp {path} {instance}")
+    def create_instance(self, guest):
+        image = self.read(os.path.join(ROOT, "catalog", guest["image"] + ".yaml"))
+        image.pop('name', None)  # key clash with guest
+        guest.update(image)
+        instance = os.path.join(ROOT, 'machines', guest['name'] + '.' + image['format'])
+        guest['instance'] = instance
+        os.system(f"qemu-img create -f qcow2 -b {image['path']} {instance} 10G")
 
-    def create_metadata(self, metadata, guest):
+    def create_metadata(self, guest):
+        metadata = os.path.join(ROOT, 'machines', guest['name'] + '.iso')
+        guest['metadata'] = metadata
         data = {
             'instance-id': secrets.token_hex(15),
             'local-hostname': guest['name']
@@ -35,8 +47,9 @@ class Hypervisor:
         print(f"create {name} {guest}")
         machine  = f"machines/{name}.qcow2c"
         metadata = f"machines/{name}.iso"
-        self.create_instance("centos7", machine)
-        self.create_metadata(metadata, guest)
+        self.create_instance(guest)
+        self.create_metadata(guest)
+        print(guest)
         args = { 
             'name': name,
             'memory': '1024', 

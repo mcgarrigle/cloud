@@ -1,0 +1,7 @@
+---
+name: centos7
+description: CentOS 7 Cloud Image
+path: /var/lib/libvirt/images/CentOS-7-x86_64-GenericCloud-1907.qcow2c
+format: qcow2c
+os-type: Linux
+os-variant: centos7.0

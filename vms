@@ -19,6 +19,9 @@ def state(s):
 for domain in conn.listAllDomains():
     #metadata = domain.metadata(libvirt.VIR_DOMAIN_METADATA_ELEMENT, "http://spinup.io/instance")
     nic = domain.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)
-    n = next(iter(nic)) 
-    ip = nic[n]['addrs'][0]['addr']
-    print(domain.name(),state(domain.state()), ip)
+    if len(nic) > 0:
+        n = next(iter(nic)) 
+        ip = nic[n]['addrs'][0]['addr']
+        print(domain.name(),state(domain.state()), ip)
+    else:
+        print(domain.name(),state(domain.state()))
