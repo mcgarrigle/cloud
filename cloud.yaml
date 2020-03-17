@@ -15,3 +15,9 @@ guests:
     image: centos7
     memory: 1024
     disk: 10G
+  server2:
+    hostname: server2.local
+    cores: 1
+    image: centos8
+    memory: 1024
+    disk: 10G

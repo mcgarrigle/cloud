@@ -1,8 +1,10 @@
 
 import os, re, yaml
+import subprocess
 import secrets
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+VIRT_ROOT = '/var/lib/libvirt/filesystems/'
 
 class Hypervisor:
 
@@ -28,12 +30,12 @@ class Hypervisor:
         image = self.read(os.path.join(ROOT, "catalog", guest["image"] + ".yaml"))
         image.pop('name', None)  # key clash with guest
         guest.update(image)
-        instance = os.path.join(ROOT, 'machines', guest['name'] + '.' + image['format'])
+        instance = os.path.join(VIRT_ROOT, guest['name'] + '.' + image['format'])
         guest['instance'] = instance
         os.system(f"qemu-img create -f qcow2 -b {image['path']} {instance} {guest['disk']}")
 
     def create_metadata(self, guest):
-        metadata = os.path.join(ROOT, 'machines', guest['name'] + '.iso')
+        metadata = os.path.join(VIRT_ROOT, guest['name'] + '.iso')
         guest['metadata'] = metadata
         data = {
             'instance-id': secrets.token_hex(15),
@@ -60,7 +62,7 @@ class Hypervisor:
             'graphics':   'none' 
         }
         args = ["virt-install", "--import", "--noautoconsole"] + self.argv(args)
-        os.system(' '.join(args))
+        subprocess.call(args)
 
     def destroy(self, guest):
         domain = guest['name']
