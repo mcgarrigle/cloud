@@ -43,19 +43,16 @@ class Hypervisor:
         os.system(f"genisoimage -input-charset utf-8 -output {metadata} -volid cidata -joliet -rock metadata/user-data metadata/meta-data")
 
     def create(self, guest):
-        name = guest['name']
-        print(f"create {name} {guest}")
-        machine  = f"machines/{name}.qcow2c"
-        metadata = f"machines/{name}.iso"
+        print(f"create {guest}")
         self.create_instance(guest)
         self.create_metadata(guest)
         print(guest)
         args = { 
-            'name': name,
+            'name': guest['name'],
             'memory': '1024', 
             'vcpus': '1', 
-            'disk0': f"{machine},device=disk",
-            'disk1': f"{metadata},device=cdrom",
+            'disk0': f"{guest['instance']},device=disk",
+            'disk1': f"{guest['metadata']},device=cdrom",
             'virt-type': 'kvm', 
             'os-type': 'Linux', 
             'os-variant': 'centos7.0', 
@@ -63,8 +60,7 @@ class Hypervisor:
             'graphics': 'none' 
         }
         args = ["virt-install", "--import", "--noautoconsole"] + self.argv(args)
-        command = ' '.join(args) 
-        os.system(command)
+        os.system(' '.join(args))
 
     def destroy(self, guest):
         domain = guest['name']
