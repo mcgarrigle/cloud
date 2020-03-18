@@ -27,6 +27,7 @@ class Hypervisor:
 
     def create_instance(self, guest):
         image = self.read(os.path.join(ROOT, "catalog", guest["image"] + ".yaml"))
+        #guest = {**image, **guest}
         image.pop('name', None)  # key clash with guest
         guest.update(image)
         instance = os.path.join(VIRT_ROOT, guest['name'] + '.' + image['format'])
@@ -41,11 +42,11 @@ class Hypervisor:
             'local-hostname': guest.get('hostname', guest['name'])
         }
         self.write("metadata/meta-data", data)
-        os.system(f"genisoimage" 
-            f"-joliet" 
-            f"-input-charset utf-8"
-            f"-output {metadata}"
-            f"-volid cidata"
+        os.system(f"genisoimage " 
+            f"-joliet " 
+            f"-input-charset utf-8 "
+            f"-output {metadata} "
+            f"-volid cidata "
             f"-rock metadata/user-data metadata/meta-data"
         )
 
