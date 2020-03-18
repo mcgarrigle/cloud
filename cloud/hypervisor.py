@@ -1,4 +1,3 @@
-
 import os, re, yaml
 import subprocess
 import secrets
@@ -42,7 +41,13 @@ class Hypervisor:
             'local-hostname': guest.get('hostname', guest['name'])
         }
         self.write("metadata/meta-data", data)
-        os.system(f"genisoimage -input-charset utf-8 -output {metadata} -volid cidata -joliet -rock metadata/user-data metadata/meta-data")
+        os.system(f"genisoimage" 
+            f"-joliet" 
+            f"-input-charset utf-8"
+            f"-output {metadata}"
+            f"-volid cidata"
+            f"-rock metadata/user-data metadata/meta-data"
+        )
 
     def create(self, guest):
         print(f"create {guest}")

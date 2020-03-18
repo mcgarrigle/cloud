@@ -1,4 +1,3 @@
-
 from cloud.hypervisor import Hypervisor
 
 class Action:
@@ -13,4 +12,3 @@ class Action:
     def down(self, guest):
         print("up", guest)
         self.hypervisor.destroy(guest)
-
