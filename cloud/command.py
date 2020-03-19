@@ -1,4 +1,6 @@
+import os
 import yaml
+import dns.resolver
 from cloud.action import Action
 
 class Command:
@@ -35,6 +37,14 @@ class Command:
     def _down(self, args):
         for guest in self.guests:
             self.action.down(guest)
+
+    def _go(self, args):
+        res = dns.resolver.Resolver()
+        res.nameservers = ['192.168.122.1']
+        answers = res.query(args[0] + '.')
+        ip = answers[0]
+        print(f"ssh cloud@{ip}")
+        os.system(f"ssh cloud@{ip}")
 
     def run(self, cmd, args):
         try:
