@@ -1,5 +1,11 @@
+Prerequisites:
+
 dnf install epel-release
 dnf install python3
 dnf install qemu-kvm
-yum install libvirt
+dnf install libvirt
 dnf install virt-install
+
+pip3 install libvirt-python
+pip3 install pyaml
+pip3 install dnspython
