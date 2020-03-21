@@ -16,12 +16,15 @@ def state(s):
     }
     return sw.get(s[0], "unknown")
 
+def first(d):
+    return list(d.values())[0]
+
 for domain in conn.listAllDomains():
     #metadata = domain.metadata(libvirt.VIR_DOMAIN_METADATA_ELEMENT, "http://spinup.io/instance")
-    nic = domain.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)
-    if len(nic) > 0:
-        n = next(iter(nic)) 
-        ip = nic[n]['addrs'][0]['addr']
-        print(domain.name(),state(domain.state()), ip)
+    nics = domain.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)
+    if len(nics) > 0:
+        nic = first(nics)
+        adr = nic['addrs'][0]['addr']
+        print(domain.name(),state(domain.state()), adr)
     else:
         print(domain.name(),state(domain.state()))

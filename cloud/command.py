@@ -2,6 +2,8 @@ import os
 import yaml
 import dns.resolver
 from cloud.action import Action
+from cloud.domains import Domains
+from cloud.domain import Domain
 
 class Command:
 
@@ -27,8 +29,13 @@ class Command:
         print("help", args)
 
     def _list(self, args):
+        domains = Domains().list()
         for guest in self.guests:
-            print(guest)
+            domain = domains.get(guest['name'])
+            if domain:
+                print(domain.name, domain.state, domain.addr)
+            else:
+                print(guest['name'], 'undefined', '-')
 
     def _up(self, args):
         for guest in self.guests:
