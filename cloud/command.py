@@ -3,21 +3,32 @@ import re
 import inspect
 import yaml
 import dns.resolver
-from cloud.action import Action
+from cloud.action  import Action
 from cloud.domains import Domains
-from cloud.domain import Domain
+from cloud.domain  import Domain
 
 class Command:
 
     def __init__(self):
-        self.config = self.load_config()
-        self.action = Action()
         self._ls = self._list   # ls is synonym for list
+        self.domains = Domains().list()
+        self.config  = self.load_config()
+        self.action  = Action()
         guests = []
-        for (k,v) in self.config['guests'].items():
-            v['name'] = k
-            guests.append(v)
+        for (name, guest) in self.config['guests'].items():
+            self.guest_state(name, guest)
+            guests.append(guest)
         self.guests = guests
+
+    def guest_state(self, name,  guest):
+        guest['name'] = name
+        domain = self.domains.get(name)
+        if domain:
+            guest['state'] = domain.state
+            guest['addr']  = domain.addr
+        else:
+            guest['state'] = 'undefined'
+            guest['addr']  = '-'
 
     def load_config(self):
         try:
@@ -38,11 +49,7 @@ class Command:
         """ show status of all guests """
         domains = Domains().list()
         for guest in self.guests:
-            domain = domains.get(guest['name'])
-            if domain:
-                print(f"{domain.name: <15} {domain.state: <10} {domain.addr}")
-            else:
-                print(f"{guest['name']: <15} undefined  -")
+            print(f"{guest['name']: <15} {guest['state']: <10} {guest['addr']}")
 
     def _up(self, args):
         """ create and start guests """
