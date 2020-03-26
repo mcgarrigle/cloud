@@ -1,3 +1,5 @@
+import os
+import dns.resolver
 from cloud.hypervisor import Hypervisor
 
 class Action:
@@ -6,9 +8,19 @@ class Action:
         self.hypervisor = Hypervisor()
 
     def up(self, guest):
-        print("up", guest)
-        self.hypervisor.create(guest)
+        print(f"up {guest['name']}")
+        if guest['state'] == 'undefined':
+            self.hypervisor.create(guest)
 
     def down(self, guest):
-        print("up", guest)
-        self.hypervisor.destroy(guest)
+        print(f"down {guest['name']}")
+        if guest['state'] != 'undefined':
+            self.hypervisor.destroy(guest)
+
+    def go(self, hostname):
+        res = dns.resolver.Resolver()
+        res.nameservers = ['192.168.122.1']
+        answers = res.query(hostname + '.')
+        ip = answers[0]
+        print(f"ssh cloud@{ip}")
+        os.system(f"ssh cloud@{ip}")

@@ -1,8 +1,6 @@
-import os
 import re
 import inspect
 import yaml
-import dns.resolver
 from cloud.action  import Action
 from cloud.domains import Domains
 from cloud.domain  import Domain
@@ -12,8 +10,8 @@ class Command:
     def __init__(self):
         self._ls = self._list   # ls is synonym for list
         self.domains = Domains().list()
-        self.config  = self.load_config()
         self.action  = Action()
+        self.config  = self.load_config()
         guests = []
         for (name, guest) in self.config['guests'].items():
             self.guest_state(name, guest)
@@ -21,8 +19,8 @@ class Command:
         self.guests = guests
 
     def guest_state(self, name,  guest):
-        guest['name'] = name
         domain = self.domains.get(name)
+        guest['name'] = name
         if domain:
             guest['state'] = domain.state
             guest['addr']  = domain.addr
@@ -47,7 +45,6 @@ class Command:
 
     def _list(self, args):
         """ show status of all guests """
-        domains = Domains().list()
         for guest in self.guests:
             print(f"{guest['name']: <15} {guest['state']: <10} {guest['addr']}")
 
@@ -63,12 +60,7 @@ class Command:
 
     def _go(self, args):
         """ ssh to guest """
-        res = dns.resolver.Resolver()
-        res.nameservers = ['192.168.122.1']
-        answers = res.query(args[0] + '.')
-        ip = answers[0]
-        print(f"ssh cloud@{ip}")
-        os.system(f"ssh cloud@{ip}")
+        self.action.go(args[0])
 
     def run(self, cmd, args):
         try:
