@@ -8,7 +8,6 @@ from cloud.domain  import Domain
 class Command:
 
     def __init__(self):
-        self._ls = self._list   # ls is synonym for list
         self.domains = Domains().list()
         self.action  = Action()
         self.config  = self.load_config()
@@ -47,6 +46,17 @@ class Command:
         """ show status of all guests """
         for guest in self.guests:
             print(f"{guest['name']: <15} {guest['state']: <10} {guest['addr']}")
+
+    _ls = _list   # ls is synonym for list
+
+    def _inventory(self, args):
+        """ create ansible inventory of all guests """
+        inv = {}
+        for guest in self.guests:
+            inv[guest['name']] = { 'ansible_host': guest['addr'] }
+        print(yaml.dump({ 'all': { 'hosts': inv }}))
+
+    _inv = _inventory
 
     def _up(self, args):
         """ create and start guests """
