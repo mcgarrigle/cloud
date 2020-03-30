@@ -11,7 +11,7 @@ from cloud.command import Command
 def main(args):
     cmd = Command()
     if len(args) == 1:
-        cmd._help()
+        cmd.run('help')
     else:
         cmd.run(args[1], args[2:])
 

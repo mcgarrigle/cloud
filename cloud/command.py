@@ -35,46 +35,48 @@ class Command:
             print("cannot open cloud.yaml")
             exit(1)
 
-    def _help(self, args = []):
+    def _cmd_help(self, args = []):
         """ show help """
         print("cloud help")
-        methods = [func for func in dir(Command) if re.match(r'^_[a-z]', func)]
-        for method in sorted(list(methods)):
-            print('*', method.lstrip('_'), '-', inspect.getdoc(eval(f"self.{method}")))
+        methods = sorted(list(dir(Command)))
+        commands = [func for func in methods if re.match(r'^_cmd_[a-z]', func)]
+        for command in commands:
+            method = eval(f"self.{command}")
+            print('*', command.lstrip('_cmd_'), '-', inspect.getdoc(method))
 
-    def _list(self, args):
+    def _cmd_list(self, args):
         """ show status of all guests """
         for guest in self.guests:
             print(f"{guest['name']: <15} {guest['state']: <10} {guest['addr']}")
 
-    _ls = _list   # ls is synonym for list
+    _cmd_ls = _cmd_list   # ls is synonym for list
 
-    def _inventory(self, args):
+    def _cmd_inventory(self, args):
         """ create ansible inventory of all guests """
         inv = {}
         for guest in self.guests:
             inv[guest['name']] = { 'ansible_host': guest['addr'] }
         print(yaml.dump({ 'all': { 'hosts': inv }}))
 
-    _inv = _inventory
+    _cmd_inv = _cmd_inventory
 
-    def _up(self, args):
+    def _cmd_up(self, args):
         """ create and start guests """
         for guest in self.guests:
             self.action.up(guest)
 
-    def _down(self, args):
+    def _cmd_down(self, args):
         """ destroy and undefine guests """
         for guest in self.guests:
             self.action.down(guest)
 
-    def _go(self, args):
+    def _cmd_go(self, args):
         """ ssh to guest """
         self.action.go(args[0])
 
-    def run(self, cmd, args):
+    def run(self, cmd, args = []):
         try:
-            method = f"self._{cmd}"
+            method = f"self._cmd_{cmd}"
             fn = eval(method)
         except:
             print(f"no such command '{cmd}'")
