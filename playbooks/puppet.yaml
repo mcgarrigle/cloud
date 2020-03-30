@@ -1,0 +1,44 @@
+---
+- hosts: all
+  remote_user: cloud
+  become: yes
+  tasks:
+  - name: repos
+    yum:
+      name: 
+      - epel-release
+      - https://yum.puppet.com/puppet6-release-el-7.noarch.rpm
+  - name: packages
+    yum:
+      name: 
+      - git
+      - vim
+      - puppet-agent
+      state: present
+- hosts: puppet
+  remote_user: cloud
+  become: yes
+  tasks:
+  - name: packages
+    yum:
+      name: 
+      - puppetserver
+      state: present
+  - name: autosign
+    copy:
+      dest: /etc/puppetlabs/puppet/autosign.conf
+      content: '*'
+  - name: bashrc
+    lineinfile:
+      path: /root/.bashrc
+      regexp: '^export PATH=$PATH:/opt/puppetlabs/puppet/bin'
+      line: "export PATH=$PATH:/opt/puppetlabs/puppet/bin"
+  - name: service
+    service:
+      name: puppetserver
+      state: started
+      enabled: yes
+  - name: r10k
+    command: /opt/puppetlabs/puppet/bin/gem install r10k
+    args:
+      creates: /opt/puppetlabs/puppet/bin/r10k
