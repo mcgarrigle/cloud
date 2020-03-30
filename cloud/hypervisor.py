@@ -1,6 +1,8 @@
 import os, re, yaml
 import subprocess
 import secrets
+import libvirt
+from cloud.domain import Domain
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 VIRT_ROOT = '/var/lib/libvirt/filesystems/'
@@ -8,7 +10,13 @@ VIRT_ROOT = '/var/lib/libvirt/filesystems/'
 class Hypervisor:
 
     def __init__(self):
-        pass
+        self.conn = libvirt.open()
+
+    def domains(self):
+        domains = {}
+        for d in self.conn.listAllDomains():
+            domains[domain.name] = Domain(d)
+        return domains
 
     def read(self, path):
         with open(path, 'r') as f:

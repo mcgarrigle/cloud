@@ -1,14 +1,13 @@
 import re
 import inspect
 import yaml
-from cloud.action  import Action
-from cloud.domains import Domains
-from cloud.domain  import Domain
+from cloud.action import Action
+from cloud.hypervisor import Hypervisor
 
 class Command:
 
     def __init__(self):
-        self.domains = Domains().list()
+        self.domains = Hypervisor().domains()
         self.action  = Action()
         self.config  = self.load_config()
         guests = []
