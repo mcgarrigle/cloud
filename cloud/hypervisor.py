@@ -15,7 +15,8 @@ class Hypervisor:
     def domains(self):
         domains = {}
         for d in self.conn.listAllDomains():
-            domains[domain.name] = Domain(d)
+            domain = Domain(d)
+            domains[domain.name] = domain
         return domains
 
     def read(self, path):
