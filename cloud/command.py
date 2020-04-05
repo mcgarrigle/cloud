@@ -59,6 +59,13 @@ class Command:
 
     _cmd_inv = _cmd_inventory
 
+    def _cmd_ssh_config(self, args):
+        """ create ssh_config file """
+        for guest in self.guests:
+            print(f"Host {guest['name']}")
+            print(f"  User cloud")
+            print(f"  HostName {guest['addr']}")
+
     def _cmd_up(self, args):
         """ create and start guests """
         for guest in self.guests:
