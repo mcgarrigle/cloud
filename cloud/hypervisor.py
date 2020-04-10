@@ -56,7 +56,7 @@ class Hypervisor:
         os.system(f"genisoimage " 
             f"-joliet " 
             f"-input-charset utf-8 "
-            f"-output {metadata} "
+            f"-output {cloud_init} "
             f"-volid cidata "
             f"-rock {userdata} {metadata}"
         )
