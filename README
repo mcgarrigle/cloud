@@ -5,7 +5,17 @@ dnf install python3
 dnf install qemu-kvm
 dnf install libvirt
 dnf install virt-install
+dnf install libvirt-devel
+dnf install gcc
+dnf install python3-devel
 
-pip3 install libvirt-python
 pip3 install pyaml
+pip3 install libvirt-python
 pip3 install dnspython
+
+Bridging
+
+# virsh net-define bridge.xml
+# virsh net-start bridge
+# virsh net-autostart bridge
+# virsh net-list --all

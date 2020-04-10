@@ -44,19 +44,21 @@ class Hypervisor:
         os.system(f"qemu-img create -f qcow2 -b {image['path']} {instance} {guest['disk']}")
 
     def create_metadata(self, guest):
-        metadata = os.path.join(VIRT_ROOT, guest['name'] + '.iso')
-        guest['metadata'] = metadata
+        metadata = os.path.join(ROOT, "metadata", "meta-data")
+        userdata = os.path.join(ROOT, "metadata", "user-data")
+        cloud_init = os.path.join(VIRT_ROOT, guest['name'] + '.iso')
+        guest['cloud_init'] = cloud_init
         data = {
             'instance-id': secrets.token_hex(15),
             'local-hostname': guest.get('hostname', guest['name'])
         }
-        self.write("metadata/meta-data", data)
+        self.write(metadata, data)
         os.system(f"genisoimage " 
             f"-joliet " 
             f"-input-charset utf-8 "
             f"-output {metadata} "
             f"-volid cidata "
-            f"-rock metadata/user-data metadata/meta-data"
+            f"-rock {userdata} {metadata}"
         )
 
     def create(self, guest):
@@ -70,7 +72,7 @@ class Hypervisor:
             'memory':     guest.get('memory', '1024'),
             'vcpus':      guest.get('cores', '1'), 
             'disk0':      guest['instance'] + ",device=disk",
-            'disk1':      guest['metadata'] + ",device=cdrom",
+            'disk1':      guest['cloud_init'] + ",device=cdrom",
             'os-type':    guest['os-type'],
             'os-variant': guest['os-variant'],
             'network':    guest.get('network', 'default'),
