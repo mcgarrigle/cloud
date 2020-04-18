@@ -8,13 +8,13 @@ class Action:
         self.hypervisor = Hypervisor()
 
     def up(self, guest):
-        print(f"up {guest['name']}")
-        if guest['state'] == 'undefined':
+        print(f"up {guest.name}")
+        if guest.state == 'undefined':
             self.hypervisor.create(guest)
 
     def down(self, guest):
-        print(f"down {guest['name']}")
-        if guest['state'] != 'undefined':
+        print(f"down {guest.name}")
+        if guest.state != 'undefined':
             self.hypervisor.destroy(guest)
 
     def go(self, hostname):

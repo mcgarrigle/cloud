@@ -1,6 +1,7 @@
 import re
 import inspect
 import yaml
+from cloud.guest import Guest
 from cloud.action import Action
 from cloud.hypervisor import Hypervisor
 
@@ -10,21 +11,18 @@ class Command:
         self.domains = Hypervisor().domains()
         self.action  = Action()
         self.config  = self.load_config()
-        guests = []
-        for (name, guest) in self.config['guests'].items():
-            self.guest_state(name, guest)
-            guests.append(guest)
-        self.guests = guests
+        self.guests  = [self.__new_guest(n,g) for n,g in self.config['guests'].items() ]
 
-    def guest_state(self, name,  guest):
-        domain = self.domains.get(name)
-        guest['name'] = name
+    def __new_guest(self, name, defn):
+        guest = Guest(name, defn)
+        domain = self.domains.get(guest.name)
         if domain:
-            guest['state'] = domain.state
-            guest['addr']  = domain.addr
+            guest.state = domain.state
+            guest.addr  = domain.addr
         else:
-            guest['state'] = 'undefined'
-            guest['addr']  = '-'
+            guest.state = 'undefined'
+            guest.addr  = '-'
+        return guest
 
     def load_config(self):
         try:
@@ -46,7 +44,7 @@ class Command:
     def _cmd_list(self, args):
         """ show status of all guests """
         for guest in self.guests:
-            print(f"{guest['name']: <15} {guest['state']: <10} {guest['addr']}")
+            print(f"{guest.name: <15} {guest.state: <10} {guest.addr}")
 
     _cmd_ls = _cmd_list   # ls is synonym for list
 
@@ -54,7 +52,7 @@ class Command:
         """ create ansible inventory of all guests """
         inv = {}
         for guest in self.guests:
-            inv[guest['name']] = { 'ansible_host': guest['addr'] }
+            inv[guest.name] = { 'ansible_host': guest.addr }
         print(yaml.dump({ 'all': { 'hosts': inv }}))
 
     _cmd_inv = _cmd_inventory
@@ -62,9 +60,9 @@ class Command:
     def _cmd_ssh_config(self, args):
         """ create ssh_config file """
         for guest in self.guests:
-            print(f"Host {guest['name']}")
+            print(f"Host {guest.name}")
             print(f"  User cloud")
-            print(f"  HostName {guest['addr']}")
+            print(f"  HostName {guest.addr}")
 
     def _cmd_up(self, args):
         """ create and start guests """

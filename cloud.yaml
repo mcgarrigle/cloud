@@ -9,15 +9,18 @@ guests:
     cores: 2
     memory: 3072
     disk: 20G
+    network: 'network=default'
   server1:
     hostname: server1.local
     cores: 1
     image: centos7
     memory: 1024
     disk: 10G
+    network: 'network=default'
   server2:
     hostname: server2.local
     cores: 1
     image: centos8
     memory: 1024
     disk: 10G
+    network: 'network=default'
