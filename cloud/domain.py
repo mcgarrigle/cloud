@@ -5,7 +5,10 @@ class Domain:
     def __init__(self, domain):
         self.name   = domain.name()
         self.state  = self._state(domain.state())
-        self.addr   = self._addr(domain.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE))
+        if self.state == 'running':
+            self.addr = self._addr(domain.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE))
+        else:
+            self.addr = '-'
 
     def _state(self, s):
         sw = {

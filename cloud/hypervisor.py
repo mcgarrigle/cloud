@@ -79,6 +79,7 @@ class Hypervisor:
             'graphics':   'none' 
         }
         args = ["virt-install", "--import", "--noautoconsole"] + self.argv(args)
+        print(' '.join(args))
         subprocess.call(args)
 
     def destroy(self, guest):
