@@ -11,10 +11,11 @@ class Command:
         self.domains = Hypervisor().domains()
         self.action  = Action()
         self.config  = self.load_config()
+        self.project = self.config.get('project')
         self.guests  = [self.__new_guest(n,g) for n,g in self.config['guests'].items() ]
 
     def __new_guest(self, name, defn):
-        guest = Guest(name, defn)
+        guest = Guest(f"{self.project}_{name}", defn)
         domain = self.domains.get(guest.name)
         if domain:
             guest.state = domain.state
