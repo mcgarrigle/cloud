@@ -40,20 +40,20 @@ class Hypervisor:
         return image
 
     def create_metadata(self, guest):
-        metadata = os.path.join(ROOT, "metadata", "meta-data")
-        userdata = os.path.join(ROOT, "metadata", "user-data")
+        metapath = os.path.join(ROOT, "metadata", "meta-data")
+        userpath = os.path.join(ROOT, "metadata", "user-data")
         data = {
             'instance-id': secrets.token_hex(15),
             'local-hostname': guest.hostname
         }
-        self.write(metadata, data)
+        self.write(metapath, data)
         os.system(f"genisoimage " 
             f"-joliet " 
             f"-output {guest.disk1} "
             f"-input-charset utf-8 "
             f"-volid cidata "
             f"-rock "
-            f"{userdata} {metadata}"
+            f"{userpath} {metapath}"
         )
 
     def create(self, guest):
