@@ -15,7 +15,9 @@ class Command:
         self.guests  = [self.__new_guest(n,g) for n,g in self.config['guests'].items() ]
 
     def __new_guest(self, name, defn):
-        guest = Guest(f"{self.project}_{name}", defn)
+        if self.project:
+            name = f"{self.project}_{name}"
+        guest = Guest(name, defn)
         domain = self.domains.get(guest.name)
         if domain:
             guest.state = domain.state
