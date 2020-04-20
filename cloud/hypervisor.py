@@ -1,11 +1,12 @@
 import os, re, yaml
+import tempfile
+import shutil
 import subprocess
 import secrets
 import libvirt
 from cloud.domain import Domain
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-VIRT_ROOT = '/var/lib/libvirt/filesystems/'
 
 class Hypervisor:
 
@@ -39,14 +40,22 @@ class Hypervisor:
         os.system(f"qemu-img create -f qcow2 -b {image['path']} {guest.disk0} {guest.disk}")
         return image
 
-    def create_metadata(self, guest):
-        metapath = os.path.join(ROOT, "metadata", "meta-data")
-        userpath = os.path.join(ROOT, "metadata", "user-data")
-        data = {
+    def create_cloud_init(self, guest):
+        root = tempfile.TemporaryDirectory()
+        metapath = os.path.join(root.name, "meta-data")
+        userpath = os.path.join(root.name, "user-data")
+        metadata = {
             'instance-id': secrets.token_hex(15),
             'local-hostname': guest.hostname
         }
-        self.write(metapath, data)
+        self.write(metapath, metadata)
+        local = os.path.join(os.environ['HOME'], ".cloud_config")
+        if os.path.isfile(local):
+            path = local
+        else:
+            path = os.path.join(ROOT, "metadata", "user-data")
+        shutil.copy(path, userpath)
+        print(path)
         os.system(f"genisoimage " 
             f"-joliet " 
             f"-output {guest.disk1} "
@@ -58,7 +67,7 @@ class Hypervisor:
 
     def create(self, guest):
         print(f"create {guest.name}")
-        self.create_metadata(guest)
+        self.create_cloud_init(guest)
         image = self.create_instance(guest)
         args = { 
             'virt-type': 'kvm', 
