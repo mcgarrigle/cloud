@@ -54,7 +54,8 @@ class Command:
         inv = {}
         for guest in self.guests:
             inv[guest.name] = { 'ansible_host': guest.addr }
-        print(yaml.dump({ 'all': { 'hosts': inv }}))
+        var = { 'ansible_user': 'cloud' }
+        print(yaml.dump({ 'all': { 'hosts': inv, 'vars': var }}, default_flow_style=False))
 
     _cmd_inv = _cmd_inventory
 
