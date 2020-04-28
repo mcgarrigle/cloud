@@ -11,7 +11,7 @@ class Guest:
         self.memory   = defn.get('memory', '1024')
         self.disk     = defn.get('disk', '10G')
         self.cores    = defn.get('cores', '1')
-        self.network  = defn.get('network', 'default')
+        self.network  = defn.get('network', 'network=default')
         self.disk0    = os.path.join(VIRT_ROOT, self.name + '.qcow2')
         self.disk1    = os.path.join(VIRT_ROOT, self.name + '.iso')
         self.state    = 'undefined'

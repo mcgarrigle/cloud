@@ -55,7 +55,7 @@ class Command:
         """ create ansible inventory of all guests """
         inv = {}
         for guest in self.guests:
-            inv[guest.name] = { 'ansible_host': guest.addr }
+            inv[guest.hostname] = { 'ansible_host': guest.addr }
         var = { 'ansible_user': 'cloud' }
         print(yaml.dump({ 'all': { 'hosts': inv, 'vars': var }}, default_flow_style=False))
 
@@ -64,7 +64,7 @@ class Command:
     def _cmd_ssh_config(self, args):
         """ create ssh_config file """
         for guest in self.guests:
-            print(f"Host {guest.name}")
+            print(f"Host {guest.hostname}")
             print(f"  User cloud")
             print(f"  HostName {guest.addr}")
 
