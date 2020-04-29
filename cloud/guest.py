@@ -18,4 +18,4 @@ class Guest:
         self.addr     = '-'
 
     def __str__(self):
-        return f"{guest.name} {guest.state} {guest.addr}"
+        return f"{self.name} {self.state} {self.addr}"

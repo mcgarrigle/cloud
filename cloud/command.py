@@ -35,6 +35,14 @@ class Command:
             print("cannot open cloud.yaml")
             exit(1)
 
+    def these(self, args):
+        print(args)
+        if args:
+            pattern = args[0]
+            return [ g for g in self.guests if g.name == pattern ]
+        else:
+            return self.guests
+
     def _cmd_help(self, args = []):
         """ show help """
         print("cloud help")
@@ -75,7 +83,7 @@ class Command:
 
     def _cmd_down(self, args):
         """ destroy and undefine guests """
-        for guest in self.guests:
+        for guest in self.these(args):
             self.action.down(guest)
 
     def _cmd_go(self, args):
