@@ -35,11 +35,14 @@ class Command:
             print("cannot open cloud.yaml")
             exit(1)
 
+    def regex(self, glob):
+        pattern = glob.replace('*', '.*')
+        return re.compile(f"^{pattern}$")
+
     def these(self, args):
-        print(args)
         if args:
-            pattern = args[0]
-            return [ g for g in self.guests if g.name == pattern ]
+            pattern = self.regex(args[0])
+            return [ g for g in self.guests if pattern.match(g.name) ]
         else:
             return self.guests
 
@@ -54,7 +57,7 @@ class Command:
 
     def _cmd_list(self, args):
         """ show status of all guests """
-        for guest in self.guests:
+        for guest in self.these(args):
             print(f"{guest.name: <15} {guest.state: <10} {guest.addr}")
 
     _cmd_ls = _cmd_list   # ls is synonym for list
@@ -78,7 +81,7 @@ class Command:
 
     def _cmd_up(self, args):
         """ create and start guests """
-        for guest in self.guests:
+        for guest in self.these(args):
             self.action.up(guest)
 
     def _cmd_down(self, args):
