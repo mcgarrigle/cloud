@@ -15,6 +15,7 @@ class Guest:
         self.interfaces = defn.get('interfaces', {'eth0': 'network=default'})
         self.state      = 'undefined'
         self.addr       = '-'
+        self.args       = defn.get('args', '')
         if (self.image is None) and (self.location is None):
             raise ValueError("image and location are undefined")
 

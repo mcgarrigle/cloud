@@ -103,15 +103,19 @@ class Hypervisor:
     def create_from_image(self, guest):
         print("image")
         (name, size) = next(iter(guest.disks.items()))
-        image = Image(guest.name, name, size)
+        image = Image(guest, name, size)
         image.clone(self.config['path'])
-        self.instance['disk'].append(image.disk())
+        cdrom = Image(guest, "sr0")
+        cdrom.cloud_init()
+        self.instance['disk'] = [image.disk(), cdrom.disk()]
         print(f"disk: {image.path}")
             
     def create_from_boot(self, guest):
         print("boot")
+        self.instance['location'] = self.config['location']
+        self.instance['extra-args'] = guest.args
         for (name, size) in guest.disks.items():
-            image = Image(guest.name, name, size)
+            image = Image(guest, name, size)
             image.create()
             self.instance['disk'].append(image.disk())
             print(f"disk: {image.path}")
