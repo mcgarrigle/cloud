@@ -2,6 +2,8 @@
 name: centos7
 description: CentOS 7 Cloud Image
 path: /var/lib/libvirt/images/CentOS-7-x86_64-GenericCloud-1907.qcow2c
+location: http://pi1.mac.wales/centos7/
+args: 'console=ttyS0 ip=dhcp inst.text inst.ks=http://pi1.mac.wales/cis.ks'
 format: qcow2c
-os-type: Linux
-os-variant: centos7.0
+type: Linux
+variant: centos7.0

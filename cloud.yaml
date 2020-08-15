@@ -3,24 +3,24 @@ version: '1'
 project: my
 
 guests:
-  puppet:
-    hostname: puppet.local
-    image: centos7
-    cores: 2
-    memory: 3072
-    disk: 20G
-    network: 'network=default'
   server1:
     hostname: server1.local
-    cores: 1
     image: centos7
+    cores: 1
     memory: 1024
-    disk: 10G
-    network: 'network=default'
+    disks:
+      vda: 10G
+    interfaces:
+      eth0: 'network=default'
   server2:
     hostname: server2.local
+    location: centos7
+    args: 'console=ttyS0 ip=dhcp inst.text inst.ks=http://pi1.mac.wales/cis.ks'
     cores: 1
-    image: centos8
     memory: 1024
-    disk: 10G
-    network: 'network=default'
+    disks:
+      vda: 10G
+      vdb: 10G
+    interfaces:
+      eth0: 'network=default'
+      eth1: 'network=lan'
