@@ -1,4 +1,7 @@
 import os
+import yaml
+
+from cloud import *
 
 # VIRT_ROOT = '/var/lib/libvirt/filesystems/'
 
@@ -18,6 +21,15 @@ class Guest:
         self.args       = defn.get('args', '')
         if (self.image is None) and (self.location is None):
             raise ValueError("image and location are undefined")
+        self.os = self.read_os_metadata()
+
+    def read(self, path):
+        with open(path, 'r') as f:
+            return yaml.safe_load(f.read())
+
+    def read_os_metadata(self):
+        name = (self.image or self.location)
+        return self.read(os.path.join(ROOT, "catalog", name + ".yaml"))
 
     def __str__(self):
         return f"{self.name} {self.state} {self.addr}"
