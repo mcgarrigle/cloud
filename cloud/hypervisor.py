@@ -54,9 +54,9 @@ class Hypervisor:
 
     def create_from_image(self, guest):
         (name, size) = next(iter(guest.disks.items()))
-        image = Image(guest, name, size)
+        image = Image(guest, "disk", name, size)
         image.clone(guest.os['path'])
-        cdrom = Image(guest, "sr0")
+        cdrom = Image(guest, "cdrom", "sr0")
         cdrom.cloud_init()
         self.instance['disk'] = [image.disk(), cdrom.disk()]
             
@@ -65,7 +65,7 @@ class Hypervisor:
         self.instance['location'] = guest.os['location']
         self.instance['extra-args'] = guest.args
         for (name, size) in guest.disks.items():
-            image = Image(guest, name, size)
+            image = Image(guest, "disk", name, size)
             image.create()
             self.instance['disk'].append(image.disk())
             
@@ -90,5 +90,10 @@ class Hypervisor:
     def destroy(self, guest):
         os.system(f"virsh destroy --domain {guest.name}")
         os.system(f"virsh undefine --domain {guest.name}")
-        self.delete_file(guest.disk0)
-        self.delete_file(guest.disk1)
+        for (name, size) in guest.disks.items():
+            image = Image(guest, "disk", name, size)
+            image.delete()
+        if guest.image:
+            cdrom = Image(guest, "cdrom", "sr0")
+            cdrom.delete()
+

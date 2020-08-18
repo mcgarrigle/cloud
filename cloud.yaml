@@ -17,7 +17,7 @@ guests:
     location: centos7
     args: 'console=ttyS0 ip=dhcp inst.text inst.ks=http://pi1.mac.wales/cis.ks'
     cores: 1
-    memory: 1024
+    memory: 2048
     disks:
       vda: 10G
       vdb: 10G

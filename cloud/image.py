@@ -5,23 +5,24 @@ import shutil
 import subprocess
 import secrets
 
-from cloud import * # IMAGE_ROOT
+from cloud import *
 
 class Image:
 
-    def __init__(self, guest, volume, size = 0):
+    def __init__(self, guest, device, volume, size = 0):
         self.guest = guest
-        self.path = os.path.join(IMAGE_ROOT, guest.name + '_' + volume)
+        self.device = device
         self.size = size
+        if device == 'cdrom':
+            extension = '.iso'
+        else:
+            extension = '.qcow2'
+        self.path = os.path.join(IMAGE_ROOT, guest.name + '_' + volume + extension)
 
     def create(self):
-        self.device = 'disk'
-        self.path = self.path + '.qcow2'
         os.system(f"qemu-img create -f qcow2 {self.path} {self.size}")
 
     def clone(self, image):
-        self.device = 'disk'
-        self.path = self.path + '.qcow2'
         os.system(f"qemu-img create -f qcow2 -b {image} {self.path} {self.size}")
 
     def disk(self):
@@ -35,8 +36,6 @@ class Image:
             return os.path.join(ROOT, "metadata", "user-data")
 
     def cloud_init(self):
-        self.device = 'cdrom'
-        self.path = self.path + '.iso'
         print(self.path)
         root = tempfile.TemporaryDirectory()
         metapath = os.path.join(root.name, "meta-data")
@@ -61,7 +60,8 @@ class Image:
             f.write(yaml.dump(data))
 
     def delete(self):
+        print(f"deleting: {self.path}")
         if os.path.exists(self.path):
             os.remove(self.path)
         else:
-            print("The file does not exist")
+            print("-- ERROR: the file does not exist")
