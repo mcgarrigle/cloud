@@ -7,9 +7,6 @@ import libvirt
 
 class Process:
 
-    def __init__(self, args):
-        self.args = args
-
     # take lists of lists or tuples and return flattened list
 
     def flatten(self, a):
@@ -22,12 +19,16 @@ class Process:
         tuples = [(self.parameter(k), v) for v in g]
         return self.flatten(tuples)
 
-    def args(self):
-        singles = [ (self.parameter(k), str(v)) for (k, v) in args.items() if type(v) is str]
-        groups = [ self.expand(k, v) for (k, v) in args.items() if type(v) is list]
-        return self.flatten(singles) + self.flatten(groups)
+    def scalar(self, v):
+        return ((type(v) is str) or (type(v) is int))
 
-    def run(self):
-        args = ["virt-install", "--import", "--noautoconsole"] + self.argv(self.instance)
+    def argv(self, args):
+        flags = [ self.parameter(k) for (k, v) in args.items() if v is None]
+        singles = [ (self.parameter(k), str(v)) for (k, v) in args.items() if self.scalar(v)]
+        groups = [ self.expand(k, v) for (k, v) in args.items() if type(v) is list]
+        return flags + self.flatten(singles) + self.flatten(groups)
+
+    def run(self, cmd, args):
+        args = [cmd] + self.argv(args)
         print(' '.join(args))
         subprocess.call(args)

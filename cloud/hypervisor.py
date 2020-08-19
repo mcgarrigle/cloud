@@ -8,6 +8,7 @@ import libvirt
 from cloud import *
 from cloud.domain import Domain
 from cloud.image  import Image
+from cloud.process import Process
 
 class Hypervisor:
 
@@ -22,34 +23,19 @@ class Hypervisor:
             domains[domain.name] = domain
         return domains
 
-    # take lists of lists or tuples and return flattened list
-
-    def flatten(self, a):
-        return [y for x in a for y in x]
-
-    def parameter(self, s):
-        return f"--{s}"
-
-    def expand(self, k, g):
-        tuples = [(self.parameter(k), v) for v in g]
-        return self.flatten(tuples)
-
-    def argv(self, args):
-        singles = [ (self.parameter(k), str(v)) for (k, v) in args.items() if type(v) is str]
-        groups = [ self.expand(k, v) for (k, v) in args.items() if type(v) is list]
-        return self.flatten(singles) + self.flatten(groups)
-
     def create_instance(self, guest):
         self.instance = { 
-            'virt-type':  'kvm', 
-            'graphics':   'none' ,
-            'name':       guest.name,
-            'memory':     guest.memory,
-            'vcpus':      guest.cores, 
-            'os-type':    guest.os['type'],
-            'os-variant': guest.os['variant'],
-            'disk':      [],
-            'network':   list(guest.interfaces.values())
+            'import':        None,
+            'noautoconsole': None,
+            'virt-type':     'kvm', 
+            'graphics':      'none' ,
+            'name':          guest.name,
+            'memory':        guest.memory,
+            'vcpus':         guest.cores, 
+            'os-type':       guest.os['type'],
+            'os-variant':    guest.os['variant'],
+            'disk':         [],
+            'network':      list(guest.interfaces.values())
         }
 
     def create_from_image(self, guest):
@@ -77,9 +63,8 @@ class Hypervisor:
         else:
             self.create_from_boot(guest)
         print(self.instance)
-        args = ["virt-install", "--import", "--noautoconsole"] + self.argv(self.instance)
-        print(' '.join(args))
-        subprocess.call(args)
+        p = Process()
+        p.run("virt-install", self.instance)
 
     def delete_file(self, path):
         if os.path.exists(path):
