@@ -6,9 +6,9 @@ import secrets
 import libvirt
 
 from cloud import *
-from cloud.domain import Domain
-from cloud.image  import Image
-from cloud.process import Process
+from cloud.domain  import Domain
+from cloud.image   import Image
+from cloud.process import run
 
 class Hypervisor:
 
@@ -63,8 +63,7 @@ class Hypervisor:
         else:
             self.create_from_boot(guest)
         print(self.instance)
-        p = Process()
-        p.run("virt-install", self.instance)
+        run('virt-install', self.instance)
 
     def delete_file(self, path):
         if os.path.exists(path):
