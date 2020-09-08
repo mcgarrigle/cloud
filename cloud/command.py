@@ -16,7 +16,7 @@ class Command:
 
     def __new_guest(self, name, defn):
         if self.project:
-            name = f"{self.project}_{name}"
+            name = f"{self.project}-{name}"
         guest = Guest(name, defn)
         domain = self.domains.get(guest.name)
         if domain:

@@ -28,5 +28,5 @@ def argv(args):
 
 def run(cmd, args):
     args = [cmd] + argv(args)
-    print(' '.join(args))
+    # print(' '.join(args))
     subprocess.call(args)

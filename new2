@@ -1,0 +1,23 @@
+#!/bin/bash
+
+name="$1"
+disk="/var/lib/libvirt/filesystems/${name}.qcow2c"
+
+qemu-img create ${disk} 55G
+
+#   --cdrom /var/lib/libvirt/images/CentOS-7-x86_64-Minimal-1810.iso \
+
+virt-install \
+  --location http://pi1.mac.wales/centos7/ \
+  --name "${name}" \
+  --memory 4096 \
+  --vcpus 1 \
+  --disk ${disk},device=disk \
+  --os-type Linux \
+  --os-variant centos7.0 \
+  --virt-type kvm \
+  --network network=default \
+  --network network=lan \
+  --graphics none \
+  --extra-args='inst.text console=ttyS0 ip=dhcp inst.ks=http://pi1.mac.wales/cis.ks' \
+  --noautoconsole
