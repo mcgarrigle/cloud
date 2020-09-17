@@ -47,7 +47,6 @@ class Hypervisor:
         self.instance['disk'] = [image.disk(), cdrom.disk()]
             
     def create_from_boot(self, guest):
-        print("boot")
         self.instance['location'] = guest.os['location']
         self.instance['extra-args'] = guest.args
         for (name, size) in guest.disks.items():
@@ -62,7 +61,6 @@ class Hypervisor:
             self.create_from_image(guest)
         else:
             self.create_from_boot(guest)
-        print(self.instance)
         run('virt-install', self.instance)
 
     def delete_file(self, path):
