@@ -1,0 +1,4 @@
+<network>
+  <name>internal2</name>
+  <bridge name='virbr4' stp='on' delay='0'/>
+</network>
