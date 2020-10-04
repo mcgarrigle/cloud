@@ -1,0 +1,8 @@
+---
+name: cloud7
+description: CentOS 7 Cloud Image
+path: /var/lib/libvirt/images/cloud7.qcow2
+location: http://pi4.mac.wales/centos7/
+format: qcow2c
+type: Linux
+variant: centos7.0
