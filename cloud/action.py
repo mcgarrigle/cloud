@@ -22,5 +22,4 @@ class Action:
         res.nameservers = ['192.168.122.1']
         answers = res.query(hostname + '.')
         ip = answers[0]
-        print(f"ssh cloud@{ip}")
-        os.system(f"ssh cloud@{ip}")
+        os.system(f"ssh {ip}")

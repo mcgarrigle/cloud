@@ -19,3 +19,9 @@ Bridging
 # virsh net-start bridge
 # virsh net-autostart bridge
 # virsh net-list --all
+
+Disk Partition
+
+# yum install  cloud-utils-growpart
+# growpart /dev/vda 1
+# xfs_growfs /dev/vda1
