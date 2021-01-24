@@ -28,14 +28,14 @@ class Hypervisor:
             'import':        None,
             'noautoconsole': None,
             'virt-type':     'kvm', 
-            'graphics':      'none' ,
+            'graphics':      guest.graphics,
             'name':          guest.name,
             'memory':        guest.memory,
             'vcpus':         guest.cores, 
             'os-type':       guest.os['type'],
             'os-variant':    guest.os['variant'],
-            'disk':         [],
-            'network':      list(guest.interfaces.values())
+            'disk':          [],
+            'network':       list(guest.interfaces.values())
         }
 
     def create_from_image(self, guest):

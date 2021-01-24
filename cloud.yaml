@@ -1,6 +1,6 @@
 version: '1'
 
-project: my
+project: test
 
 guests:
   server1:
@@ -15,7 +15,18 @@ guests:
   server2:
     hostname: server2.local
     location: centos7
-    args: 'console=ttyS0 ip=dhcp inst.text inst.ks=http://pi1.mac.wales/cis.ks'
+    args: 'console=ttyS0 ip=dhcp inst.text inst.ks=http://pi4.mac.wales/desktop7.ks'
+    cores: 1
+    memory: 2048
+    disks:
+      vda: 50G
+    interfaces:
+      eth0: 'network=default'
+    graphics: vnc
+  server3:
+    hostname: server3.local
+    location: centos7
+    args: 'console=ttyS0 ip=dhcp inst.text inst.ks=http://pi4.mac.wales/centos7.ks'
     cores: 1
     memory: 2048
     disks:

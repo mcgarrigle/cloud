@@ -16,6 +16,7 @@ class Guest:
         self.disks      = defn.get('disks', {'vda': '10G'})
         self.cores      = defn.get('cores', '1')
         self.interfaces = defn.get('interfaces', {'eth0': 'network=default'})
+        self.graphics   = defn.get('graphics', 'none')
         self.state      = 'undefined'
         self.addr       = '-'
         self.args       = defn.get('args', '')

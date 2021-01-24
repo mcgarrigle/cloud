@@ -1,10 +1,11 @@
 ---
 name: ubuntu-server
 description: Ubuntu Focal Cloud Image
+location: http://pi4.mac.wales/ubuntu/
 #url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-disk-kvm.img
 #path: /var/lib/libvirt/images/focal-server-cloudimg-amd64-disk-kvm.img
 url: https://cloud-images.ubuntu.com/releases/eoan/release/ubuntu-19.10-server-cloudimg-amd64-disk-kvm.img
 path: /var/lib/libvirt/images/ubuntu-19.10-server-cloudimg-amd64-disk-kvm.img
 format: img
-os-type: Linux
-os-variant: ubuntu19.04
+type: Linux
+variant: ubuntu19.04
