@@ -63,7 +63,13 @@ class Hypervisor:
             self.create_from_boot(guest)
         run('virt-install', self.instance)
 
-    def delete_file(self, path):
+    def start(self, guest):
+        os.system(f"virsh start --domain {guest.name}")
+
+    def stop(self, guest):
+        os.system(f"virsh shutdown --domain {guest.name}")
+
+    def __delete_file(self, path):
         if os.path.exists(path):
             os.remove(path)
         else:

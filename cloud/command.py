@@ -85,6 +85,11 @@ class Command:
         for guest in self.these(args):
             self.action.up(guest)
 
+    def _cmd_stop(self, args):
+        """ stop guests """
+        for guest in self.these(args):
+            self.action.stop(guest)
+
     def _cmd_down(self, args):
         """ destroy and undefine guests """
         for guest in self.these(args):
