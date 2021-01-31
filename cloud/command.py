@@ -1,5 +1,4 @@
 import re
-import inspect
 import yaml
 from cloud.guest import Guest
 from cloud.action import Action
@@ -10,9 +9,6 @@ class Command:
     def __init__(self):
         self.domains = Hypervisor().domains()
         self.action  = Action()
-        self.config  = self.load_config()
-        self.project = self.config.get('project')
-        self.guests  = [self.__new_guest(n,g) for n,g in self.config['guests'].items() ]
 
     def __new_guest(self, name, defn):
         if self.project:
@@ -27,12 +23,18 @@ class Command:
             guest.addr  = '-'
         return guest
 
-    def load_config(self):
+    def commands(self):
+        methods = list(dir(Command))
+        return [f[5:] for f in methods if re.match(r'^_cmd_', f)]
+
+    def load_config(self, path):
         try:
-            with open('cloud.yaml') as f:
-                return yaml.safe_load(f)
+            with open(path) as f:
+                self.config = yaml.safe_load(f)
+            self.project = self.config.get('project')
+            self.guests  = [self.__new_guest(n,g) for n,g in self.config['guests'].items() ]
         except:
-            print("cannot open cloud.yaml")
+            print(f"cannot open {path}")
             exit(1)
 
     def regex(self, glob):
@@ -46,64 +48,43 @@ class Command:
         else:
             return self.guests
 
-    def _cmd_help(self, args = []):
-        """ show help """
-        print("cloud help")
-        methods = sorted(list(dir(Command)))
-        commands = [func for func in methods if re.match(r'^_cmd_[a-z]', func)]
-        for command in commands:
-            method = eval(f"self.{command}")
-            print('*', command.lstrip('_cmd_'), '-', inspect.getdoc(method))
-
     def _cmd_list(self, args):
-        """ show status of all guests """
         for guest in self.these(args):
             print(f"{guest.name: <15} {guest.state: <10} {guest.addr}")
 
     _cmd_ls = _cmd_list   # ls is synonym for list
 
     def _cmd_inventory(self, args):
-        """ create ansible inventory of all guests """
         inv = {}
         for guest in self.guests:
             inv[guest.hostname] = { 'ansible_host': guest.addr }
-        # var = { 'ansible_user': 'cloud' }
         var = {}
         print(yaml.dump({ 'all': { 'hosts': inv, 'vars': var }}, default_flow_style=False))
 
     _cmd_inv = _cmd_inventory
 
     def _cmd_ssh_config(self, args):
-        """ create ssh_config file """
         for guest in self.guests:
             print(f"Host {guest.hostname}")
-            # print(f"  User cloud")
             print(f"  HostName {guest.addr}")
 
     def _cmd_up(self, args):
-        """ create and start guests """
         for guest in self.these(args):
             self.action.up(guest)
 
     def _cmd_stop(self, args):
-        """ stop guests """
         for guest in self.these(args):
             self.action.stop(guest)
 
     def _cmd_down(self, args):
-        """ destroy and undefine guests """
         for guest in self.these(args):
             self.action.down(guest)
 
     def _cmd_go(self, args):
-        """ ssh to guest """
         self.action.go(args[0])
 
-    def run(self, cmd, args = []):
-        try:
-            method = f"self._cmd_{cmd}"
-            fn = eval(method)
-        except:
-            print(f"no such command '{cmd}'")
-            exit(1)
+    def run(self, path, cmd, args = []):
+        self.load_config(path)
+        method = f"self._cmd_{cmd}"
+        fn = eval(method)
         fn(args)

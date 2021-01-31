@@ -2,6 +2,7 @@
 
 import os
 import sys
+import argparse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(ROOT)
@@ -9,11 +10,18 @@ sys.path.append(ROOT)
 from cloud.command import Command
 
 def main(args):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--file', default='cloud.yaml', dest='config')
+    subparsers = parser.add_subparsers(dest="command")
+
     cmd = Command()
-    if len(args) == 1:
-        cmd.run('help')
-    else:
-        cmd.run(args[1], args[2:])
+
+    for command in cmd.commands():
+        p = subparsers.add_parser(command)
+        p.add_argument('arguments', nargs='?')
+    args = parser.parse_args()
+
+    cmd.run(args.config, args.command, args.arguments)
 
 if __name__ == "__main__":
     main(sys.argv)
