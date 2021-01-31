@@ -9,9 +9,6 @@ class Command:
     def __init__(self):
         self.domains = Hypervisor().domains()
         self.action  = Action()
-        self.config  = self.load_config()
-        self.project = self.config.get('project')
-        self.guests  = [self.__new_guest(n,g) for n,g in self.config['guests'].items() ]
 
     def __new_guest(self, name, defn):
         if self.project:
@@ -30,12 +27,14 @@ class Command:
         methods = list(dir(Command))
         return [f[5:] for f in methods if re.match(r'^_cmd_', f)]
 
-    def load_config(self):
+    def load_config(self, path):
         try:
-            with open('cloud.yaml') as f:
-                return yaml.safe_load(f)
+            with open(path) as f:
+                self.config = yaml.safe_load(f)
+            self.project = self.config.get('project')
+            self.guests  = [self.__new_guest(n,g) for n,g in self.config['guests'].items() ]
         except:
-            print("cannot open cloud.yaml")
+            print(f"cannot open {path}")
             exit(1)
 
     def regex(self, glob):
@@ -67,7 +66,6 @@ class Command:
     def _cmd_ssh_config(self, args):
         for guest in self.guests:
             print(f"Host {guest.hostname}")
-            # print(f"  User cloud")
             print(f"  HostName {guest.addr}")
 
     def _cmd_up(self, args):
@@ -85,7 +83,8 @@ class Command:
     def _cmd_go(self, args):
         self.action.go(args[0])
 
-    def run(self, cmd, args = []):
+    def run(self, path, cmd, args = []):
+        self.load_config(path)
         method = f"self._cmd_{cmd}"
         fn = eval(method)
         fn(args)

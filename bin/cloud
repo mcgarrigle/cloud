@@ -21,7 +21,7 @@ def main(args):
         p.add_argument('arguments', nargs='?')
     args = parser.parse_args()
 
-    cmd.run(args.command, args.arguments)
+    cmd.run(args.config, args.command, args.arguments)
 
 if __name__ == "__main__":
     main(sys.argv)
