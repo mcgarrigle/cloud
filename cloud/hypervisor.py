@@ -1,4 +1,5 @@
 import os
+import sys
 import tempfile
 import shutil
 import subprocess
@@ -25,9 +26,9 @@ class Hypervisor:
 
     def create_instance(self, guest):
         self.instance = { 
+            'virt-type':     'kvm', 
             'import':        None,
             'noautoconsole': None,
-            'virt-type':     'kvm', 
             'graphics':      guest.graphics,
             'name':          guest.name,
             'memory':        guest.memory,
@@ -38,7 +39,7 @@ class Hypervisor:
             'network':       list(guest.interfaces.values())
         }
 
-    def create_from_image(self, guest):
+    def create_cloud(self, guest):
         (name, size) = next(iter(guest.disks.items()))
         image = Image(guest, "disk", name, size)
         image.clone(guest.os['path'])
@@ -46,7 +47,19 @@ class Hypervisor:
         cdrom.cloud_init()
         self.instance['disk'] = [image.disk(), cdrom.disk()]
             
-    def create_from_boot(self, guest):
+    def create_clone(self, guest):
+        (name, size) = next(iter(guest.disks.items()))
+        image = Image(guest, "disk", name, size)
+        image.clone(guest.os['path'])
+        self.instance['disk'] = [image.disk()]
+            
+    def create_link(self, guest):
+        (name, size) = next(iter(guest.disks.items()))
+        image = Image(guest, "disk", name, size)
+        image.clone(guest.os['path'])
+        self.instance['disk'] = [image.disk()]
+            
+    def create_install(self, guest):
         self.instance['location'] = guest.os['location']
         self.instance['extra-args'] = guest.args
         for (name, size) in guest.disks.items():
@@ -57,10 +70,16 @@ class Hypervisor:
     def create(self, guest):
         print(f"create {guest.name}")
         self.create_instance(guest)
-        if guest.image:
-            self.create_from_image(guest)
+        if guest.initialise == 'cloud':
+            self.create_cloud(guest)
+        if guest.initialise == 'clone':
+            self.create_clone(guest)
+        elif guest.initialise == 'link':
+            self.create_link(guest)
+        elif guest.initialise == 'install':
+            self.create_install(guest)
         else:
-            self.create_from_boot(guest)
+          sys.exit(f"initialise mode '{guest.initialise}' unknown")
         run('virt-install', self.instance)
 
     def start(self, guest):
@@ -81,7 +100,6 @@ class Hypervisor:
         for (name, size) in guest.disks.items():
             image = Image(guest, "disk", name, size)
             image.delete()
-        if guest.image:
+        if guest.initialise == 'cloud':
             cdrom = Image(guest, "cdrom", "sr0")
             cdrom.delete()
-

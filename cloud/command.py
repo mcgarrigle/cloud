@@ -1,4 +1,5 @@
 import re
+import sys
 import yaml
 from cloud.guest import Guest
 from cloud.action import Action
@@ -10,6 +11,10 @@ class Command:
         self.domains = Hypervisor().domains()
         self.action  = Action()
 
+    def commands(self):
+        methods = list(dir(Command))
+        return [f[5:] for f in methods if re.match(r'^_cmd_', f)]
+
     def __new_guest(self, name, defn):
         if self.project:
             name = f"{self.project}-{name}"
@@ -18,24 +23,16 @@ class Command:
         if domain:
             guest.state = domain.state
             guest.addr  = domain.addr
-        else:
-            guest.state = 'undefined'
-            guest.addr  = '-'
         return guest
-
-    def commands(self):
-        methods = list(dir(Command))
-        return [f[5:] for f in methods if re.match(r'^_cmd_', f)]
 
     def load_config(self, path):
         try:
             with open(path) as f:
                 self.config = yaml.safe_load(f)
-            self.project = self.config.get('project')
-            self.guests  = [self.__new_guest(n,g) for n,g in self.config['guests'].items() ]
-        except:
-            print(f"cannot open {path}")
-            exit(1)
+        except Exception as e:
+            sys.exit(f"cannot open {path}")
+        self.project = self.config.get('project')
+        self.guests  = [self.__new_guest(n,g) for n,g in self.config['guests'].items() ]
 
     def regex(self, glob):
         pattern = glob.replace('*', '.*')
