@@ -39,47 +39,45 @@ class Hypervisor:
             'network':       list(guest.interfaces.values())
         }
 
-    def create_cloud(self, guest):
-        (name, size) = next(iter(guest.disks.items()))
-        image = Image(guest, "disk", name, size)
-        image.clone(guest.os['path'])
-        cdrom = Image(guest, "cdrom", "sr0")
+    def create_cloud(self, image):
+        image.link(image.guest.os['path'])
+        cdrom = Image(image.guest, "sr0")
         cdrom.cloud_init()
         self.instance['disk'] = [image.disk(), cdrom.disk()]
             
-    def create_clone(self, guest):
-        (name, size) = next(iter(guest.disks.items()))
-        image = Image(guest, "disk", name, size)
-        image.clone(guest.os['path'])
+    def create_clone(self, image):
+        image.clone(image.guest.os['path'])
         self.instance['disk'] = [image.disk()]
             
-    def create_link(self, guest):
-        (name, size) = next(iter(guest.disks.items()))
-        image = Image(guest, "disk", name, size)
-        image.clone(guest.os['path'])
+    def create_link(self, image):
+        image.link(image.guest.os['path'])
         self.instance['disk'] = [image.disk()]
             
     def create_install(self, guest):
         self.instance['location'] = guest.os['location']
         self.instance['extra-args'] = guest.args
-        for (name, size) in guest.disks.items():
-            image = Image(guest, "disk", name, size)
-            image.create()
-            self.instance['disk'].append(image.disk())
             
     def create(self, guest):
         print(f"create {guest.name}")
         self.create_instance(guest)
+        device = next(iter(guest.disks))
+        size = guest.disks.pop(device)
+        image = Image(guest, device, size)
         if guest.initialise == 'cloud':
-            self.create_cloud(guest)
+            self.create_cloud(image)
         if guest.initialise == 'clone':
-            self.create_clone(guest)
+            self.create_clone(image)
         elif guest.initialise == 'link':
-            self.create_link(guest)
+            self.create_link(image)
         elif guest.initialise == 'install':
             self.create_install(guest)
         else:
-          sys.exit(f"initialise mode '{guest.initialise}' unknown")
+            sys.exit(f"initialise mode '{guest.initialise}' unknown")
+        # create the rest of the disks
+        for (device, size) in guest.disks.items():
+            image = Image(guest, device, size)
+            image.create()
+            self.instance['disk'].append(image.disk())
         run('virt-install', self.instance)
 
     def start(self, guest):
@@ -97,9 +95,9 @@ class Hypervisor:
     def destroy(self, guest):
         os.system(f"virsh destroy --domain {guest.name}")
         os.system(f"virsh undefine --domain {guest.name}")
-        for (name, size) in guest.disks.items():
-            image = Image(guest, "disk", name, size)
+        for device in  guest.disks.keys():
+            image = Image(guest, device)
             image.delete()
         if guest.initialise == 'cloud':
-            cdrom = Image(guest, "cdrom", "sr0")
+            cdrom = Image(guest, "sr0")
             cdrom.delete()

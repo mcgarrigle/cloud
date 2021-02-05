@@ -9,15 +9,17 @@ from cloud import *
 
 class Image:
 
-    def __init__(self, guest, device, volume, size = 0):
+    def __init__(self, guest, device, size = 0):
         self.guest = guest
         self.device = device
         self.size = size
-        if device == 'cdrom':
+        if device == 'sr0':
+            self.driver = 'cdrom'
             extension = '.iso'
         else:
+            self.driver = 'disk'
             extension = '.qcow2'
-        self.path = os.path.join(IMAGE_ROOT, guest.name + '_' + volume + extension)
+        self.path = os.path.join(IMAGE_ROOT, guest.name + '_' + device + extension)
 
     def create(self):
         os.system(f"qemu-img create -f qcow2 {self.path} {self.size}")
@@ -29,7 +31,7 @@ class Image:
         os.system(f"qemu-img create -f qcow2 -b {image} {self.path} {self.size}")
 
     def disk(self):
-      return f"{self.path},device={self.device}"
+      return f"{self.path},device={self.driver}"
 
     def user_data_path(self):
         local = os.path.join(os.environ['HOME'], ".cloud_config")
