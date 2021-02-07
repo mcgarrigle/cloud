@@ -2,8 +2,6 @@ import os
 import sys
 import tempfile
 import shutil
-import subprocess
-import secrets
 import libvirt
 
 from cloud import *
@@ -77,14 +75,14 @@ class Hypervisor:
         print(f"create {guest.name}")
         device = next(iter(guest.disks))
         size = guest.disks.pop(device)
-        self.instance = self.create_instance(guest)
-        self.instance['disk'] = self.create_boot_disk(guest, device, size)
+        instance = self.create_instance(guest)
+        instance['disk'] = self.create_boot_disk(guest, device, size)
         # create the rest of the disks
         for (device, size) in guest.disks.items():
             image = Image(guest, device, size)
             image.create()
-            self.instance['disk'].append(image.disk())
-        run('virt-install', self.instance)
+            instance['disk'].append(image.disk())
+        run('virt-install', instance)
 
     def start(self, guest):
         os.system(f"virsh start --domain {guest.name}")

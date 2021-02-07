@@ -25,7 +25,8 @@ class Image:
         os.system(f"qemu-img create -f qcow2 {self.path} {self.size}")
 
     def clone(self, image):
-        os.system(f"qemu-img create -f qcow2 -b {image} {self.path} {self.size}")
+        shutil.copyfile(image, self.path)
+        os.system(f"qemu-img resize {self.path} {self.size}")
 
     def link(self, image):
         os.system(f"qemu-img create -f qcow2 -b {image} {self.path} {self.size}")
