@@ -42,21 +42,21 @@ class Hypervisor:
         image.link(image.guest.os['path'])
         cdrom = Image(image.guest, "sr0")
         cdrom.cloud_init()
-        return [image.disk(), cdrom.disk()]
+        return [image, cdrom]
             
     def create_clone(self, image):
         image.clone(image.guest.os['path'])
-        return [image.disk()]
+        return [image]
             
     def create_link(self, image):
         image.link(image.guest.os['path'])
-        return [image.disk()]
+        return [image]
             
-    def create_install(self, guest):
-        self.instance['location'] = guest.os['location']
-        self.instance['extra-args'] = guest.args
+    def create_install(self, image):
+        self.instance['location']   = image.guest.os['location']
+        self.instance['extra-args'] = image.guest.args
         image.create()
-        return [image.disk()]
+        return [image]
     
     def create_boot_disk(self, guest, device, size):
         image = Image(guest, device, size)
@@ -74,17 +74,17 @@ class Hypervisor:
     def create_blank_disk(self, guest, device, size):
         image = Image(guest, device, size)
         image.create()
-        return image.disk()
+        return image
 
     def create(self, guest):
         print(f"create {guest.name}")
         device = next(iter(guest.disks))
         size = guest.disks.pop(device)
-        instance = self.create_instance(guest)
+        self.instance = self.create_instance(guest)
         boot = self.create_boot_disk(guest, device, size)
-        others = [ self.create_blank_disk(guest, device, size) for (device, size) in guest.disks.items() ]
-        instance['disk'] = boot + others
-        run('virt-install', instance)
+        rest = [ self.create_blank_disk(guest, device, size) for (device, size) in guest.disks.items() ]
+        self.instance['disk'] = [ d.disk() for d  in (boot + rest) ]
+        run('virt-install', self.instance)
 
     def start(self, guest):
         os.system(f"virsh start --domain {guest.name}")
