@@ -71,17 +71,19 @@ class Hypervisor:
         else:
             sys.exit(f"initialise mode '{guest.initialise}' unknown")
 
+    def create_blank_disk(self, guest, device, size):
+        image = Image(guest, device, size)
+        image.create()
+        return image.disk()
+
     def create(self, guest):
         print(f"create {guest.name}")
         device = next(iter(guest.disks))
         size = guest.disks.pop(device)
         instance = self.create_instance(guest)
-        instance['disk'] = self.create_boot_disk(guest, device, size)
-        # create the rest of the disks
-        for (device, size) in guest.disks.items():
-            image = Image(guest, device, size)
-            image.create()
-            instance['disk'].append(image.disk())
+        boot = self.create_boot_disk(guest, device, size)
+        others = [ self.create_blank_disk(guest, device, size) for (device, size) in guest.disks.items() ]
+        instance['disk'] = boot + others
         run('virt-install', instance)
 
     def start(self, guest):
