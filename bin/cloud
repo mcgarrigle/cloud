@@ -12,12 +12,11 @@ from cloud.command import Command
 def main(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file', default='cloud.yaml', dest='config')
-    subparsers = parser.add_subparsers(dest="command")
+    subparsers = parser.add_subparsers(dest='command')
 
     cmd = Command()
 
-    commands = cmd.commands()
-    for (command, helptext)  in commands.items():
+    for (command, helptext)  in cmd.commands():
         p = subparsers.add_parser(command, help=helptext)
         p.add_argument('arguments', nargs='?')
     args = parser.parse_args()

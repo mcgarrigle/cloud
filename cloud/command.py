@@ -16,7 +16,7 @@ class Command:
         functions = inspect.getmembers(Command, inspect.isfunction)
         methods = [ f for f in functions if re.match(r'^_cmd_', f[0]) ]
         mapping = [ (m[0][5:], inspect.getdoc(m[1])) for m in methods ]
-        return dict(mapping)
+        return mapping
 
     def __new_guest(self, name, defn):
         if self.project:
