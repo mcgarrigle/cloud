@@ -1,6 +1,7 @@
 import re
 import sys
 import yaml
+import inspect
 from cloud.guest import Guest
 from cloud.action import Action
 from cloud.hypervisor import Hypervisor
@@ -12,8 +13,10 @@ class Command:
         self.action  = Action()
 
     def commands(self):
-        methods = list(dir(Command))
-        return [f[5:] for f in methods if re.match(r'^_cmd_', f)]
+        functions = inspect.getmembers(Command, inspect.isfunction)
+        methods = [ f for f in functions if re.match(r'^_cmd_', f[0]) ]
+        mapping = [ (m[0][5:], inspect.getdoc(m[1])) for m in methods ]
+        return dict(mapping)
 
     def __new_guest(self, name, defn):
         if self.project:
@@ -46,12 +49,14 @@ class Command:
             return self.guests
 
     def _cmd_list(self, args):
+        """ show status of all guests """
         for guest in self.these(args):
             print(f"{guest.name: <15} {guest.state: <10} {guest.addr}")
 
     _cmd_ls = _cmd_list   # ls is synonym for list
 
     def _cmd_inventory(self, args):
+        """ create ansible inventory of all guests """
         inv = {}
         for guest in self.guests:
             inv[guest.hostname] = { 'ansible_host': guest.addr }
@@ -61,23 +66,28 @@ class Command:
     _cmd_inv = _cmd_inventory
 
     def _cmd_ssh_config(self, args):
+        """ create ssh_config file """
         for guest in self.guests:
             print(f"Host {guest.hostname}")
             print(f"  HostName {guest.addr}")
 
     def _cmd_up(self, args):
+        """ create and start guests """
         for guest in self.these(args):
             self.action.up(guest)
 
     def _cmd_stop(self, args):
+        """ halt all guests """
         for guest in self.these(args):
             self.action.stop(guest)
 
     def _cmd_down(self, args):
+        """ destroy and undefine guests """
         for guest in self.these(args):
             self.action.down(guest)
 
     def _cmd_go(self, args):
+        """ ssh to guest """
         self.action.go(args[0])
 
     def run(self, path, cmd, args = []):

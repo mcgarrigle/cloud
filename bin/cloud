@@ -16,8 +16,9 @@ def main(args):
 
     cmd = Command()
 
-    for command in cmd.commands():
-        p = subparsers.add_parser(command)
+    commands = cmd.commands()
+    for (command, helptext)  in commands.items():
+        p = subparsers.add_parser(command, help=helptext)
         p.add_argument('arguments', nargs='?')
     args = parser.parse_args()
 
