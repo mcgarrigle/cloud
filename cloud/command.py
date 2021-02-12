@@ -34,6 +34,11 @@ class Command:
                 self.config = yaml.safe_load(f)
         except Exception as e:
             sys.exit(f"cannot open {path}")
+        self.version = self.config.get('version')
+        if self.version == '2':
+            pass
+        else:
+            sys.exit(f"version {self.version} not supported")
         self.project = self.config.get('project')
         self.guests  = [self.__new_guest(n,g) for n,g in self.config['guests'].items() ]
 

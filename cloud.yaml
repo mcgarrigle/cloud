@@ -1,37 +1,39 @@
-version: '1'
+version: '2'
 
 project: test
 
 guests:
+
   server1:
     hostname: server1.local
-    image: centos7
+    os: centos7
+    initialise: link
     cores: 1
     memory: 1024
     disks:
       vda: 10G
     interfaces:
       eth0: 'network=default'
+
   server2:
     hostname: server2.local
-    location: centos7
-    args: 'console=ttyS0 ip=dhcp inst.text inst.ks=http://pi4.mac.wales/desktop7.ks'
+    os: centos7
+    initialise: clone
+    cores: 1
+    memory: 1024
+    disks:
+      vda: 10G
+    interfaces:
+      eth0: 'network=default'
+
+  server3:
+    hostname: server3.local
+    os: centos7
+    initialise: install
+    args: 'console=ttyS0 ip=dhcp inst.text inst.ks=http://pi4.mac.wales/cloud7.ks'
     cores: 1
     memory: 2048
     disks:
       vda: 50G
     interfaces:
       eth0: 'network=default'
-    graphics: vnc
-  server3:
-    hostname: server3.local
-    location: centos7
-    args: 'console=ttyS0 ip=dhcp inst.text inst.ks=http://pi4.mac.wales/centos7.ks'
-    cores: 1
-    memory: 2048
-    disks:
-      vda: 10G
-      vdb: 10G
-    interfaces:
-      eth0: 'network=default'
-      eth1: 'network=lan'

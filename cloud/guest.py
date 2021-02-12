@@ -12,7 +12,9 @@ class Guest:
             sys.exit("os is unset")
         self.name       = name
         self.hostname   = defn.get('hostname', name)
-        self.initialise = defn.get('initialise', 'clone')
+        self.initialise = defn.get('initialise')
+        if self.initialise is None:
+            self.initialise = defn.get('initialize', 'clone')
         self.memory     = defn.get('memory', '1024')
         self.disks      = defn.get('disks', {'vda': '10G'})
         self.cores      = defn.get('cores', '1')
@@ -22,6 +24,8 @@ class Guest:
         self.os         = self.read_os_metadata(os_name)
         self.state      = 'undefined'
         self.addr       = '-'
+        if self.initialise == 'copy':
+            self.initialise = 'clone'
 
     def read_os_metadata(self, name):
         path = os.path.join(ROOT, "catalog", name + ".yaml")
