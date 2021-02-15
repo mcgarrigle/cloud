@@ -16,11 +16,7 @@ class Hypervisor:
         self.instance = {}
 
     def domains(self):
-        domains = {}
-        for d in self.conn.listAllDomains():
-            domain = Domain(d)
-            domains[domain.name] = domain
-        return domains
+        return [ Domain(d) for d in self.conn.listAllDomains() ]
 
     def create_instance(self, guest):
         instance = { 

@@ -9,7 +9,8 @@ from cloud.hypervisor import Hypervisor
 class Command:
 
     def __init__(self):
-        self.domains = Hypervisor().domains()
+        domains = [ (d.name, d) for d in Hypervisor().domains() ]
+        self.domains = dict(domains)
         self.action  = Action()
 
     def commands(self):
