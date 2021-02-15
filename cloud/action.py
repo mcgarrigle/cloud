@@ -11,6 +11,7 @@ class Action:
         print(f"up {guest.name}")
         if guest.state == 'undefined':
             self.hypervisor.create(guest)
+            return
         if guest.state != 'running':
             self.hypervisor.start(guest)
 

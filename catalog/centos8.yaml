@@ -1,5 +1,5 @@
 ---
-name: centos7
+name: centos8
 description: CentOS 8 Cloud Image
 path: /var/lib/libvirt/images/CentOS-8-GenericCloud-8.1.1911-20200113.3.x86_64.qcow2
 format: qcow2c
