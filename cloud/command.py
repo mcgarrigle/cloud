@@ -34,7 +34,7 @@ class Command:
             with open(path) as f:
                 self.config = yaml.safe_load(f)
         except Exception as e:
-            sys.exit(f"cannot open {path}")
+            sys.exit(f"cannot open {path}\n{str(e)}")
         self.version = self.config.get('version')
         if self.version == '2':
             pass

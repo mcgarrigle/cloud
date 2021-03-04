@@ -1,0 +1,7 @@
+---
+name: oel8
+description: OEL 8.3 Cloud Image
+location: /var/lib/libvirt/images/OracleLinux-R8-U3-x86_64-dvd.iso
+format: qcow2c
+type: Linux
+variant: rhel8.1
