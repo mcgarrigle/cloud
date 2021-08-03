@@ -1,9 +1,4 @@
-import os, re, yaml
-import tempfile
-import shutil
 import subprocess
-import secrets
-import libvirt
 
 # take lists of lists or tuples and return flattened list
 
@@ -18,7 +13,7 @@ def expand(k, g):
     return flatten(tuples)
 
 def scalar(v):
-    return ((type(v) is str) or (type(v) is int) or (type(v) is float))
+    return isinstance(v, (str, int, float))
 
 def argv(args):
     flags = [ parameter(k) for (k, v) in args.items() if v is None]
@@ -28,5 +23,4 @@ def argv(args):
 
 def run(cmd, args):
     args = [cmd] + argv(args)
-    # print(' '.join(args))
     subprocess.call(args)

@@ -2,8 +2,6 @@ import os, sys, yaml
 
 from cloud import *
 
-# VIRT_ROOT = '/var/lib/libvirt/filesystems/'
-
 class Guest:
 
     def __init__(self, name, defn):
@@ -12,9 +10,7 @@ class Guest:
             sys.exit("os is unset")
         self.name       = name
         self.hostname   = defn.get('hostname', name)
-        self.initialise = defn.get('initialise')
-        if self.initialise is None:
-            self.initialise = defn.get('initialize', 'clone')
+        self.initialise = defn.get('initialise', defn.get('initialize', 'clone'))
         self.memory     = defn.get('memory', '1024')
         self.disks      = defn.get('disks', {'vda': '10G'})
         self.cores      = defn.get('cores', '1')
