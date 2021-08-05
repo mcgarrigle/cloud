@@ -15,5 +15,12 @@ def webhook_post():
     hooks[id] = request.get_data(as_text=True)
     resp = Response()
     resp.status = '201'
-    resp.headers['location'] = f"/{id}"
+    resp.headers['Location'] = f"/{id}"
+    return resp
+
+@app.route("/<id>", methods=['PUT'])
+def webhook_put(id):
+    hooks[id] = request.get_data(as_text=True)
+    resp = Response()
+    resp.status = '204'
     return resp
