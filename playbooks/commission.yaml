@@ -19,6 +19,12 @@
     args:
       creates: '/var/lib/misc/fs-grown'
 
+  - name: firewalld is disabled
+    systemd: name=firewalld enabled=no state=stopped
+
+  - name: Reboot
+    reboot:
+
   vars:
     ansible_ssh_user: root
     ansible_ssh_pass: letmein
