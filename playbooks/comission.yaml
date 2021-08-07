@@ -1,0 +1,24 @@
+---
+- name: commission servers
+  hosts: all
+  gather_facts: false
+  any_errors_fatal: true
+
+  tasks:
+  - name: Set Hostname
+    hostname:
+      name: "{{inventory_hostname}}"
+  
+  - name: Distribute Public SSH Key
+    authorized_key:
+      user: root
+      key:  "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+  - name: Resize Root FS
+    shell: 'growpart /dev/vda 1  && xfs_growfs /dev/vda1 && touch /var/lib/misc/fs-grown'
+    args:
+      creates: '/var/lib/misc/fs-grown'
+
+  vars:
+    ansible_ssh_user: root
+    ansible_ssh_pass: letmein

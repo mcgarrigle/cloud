@@ -15,6 +15,7 @@
       - vim
       - puppet-agent
       state: present
+
 - hosts: puppet
   remote_user: cloud
   become: yes

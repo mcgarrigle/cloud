@@ -2,6 +2,7 @@
 name: rocky8
 description: Rocky 8.4 Cloud Image
 location: /var/lib/libvirt/images/Rocky-8.4-x86_64-dvd1.iso
+path: /var/lib/libvirt/images/rock-8.4.qcow2
 format: qcow2c
 type: Linux
 variant: rhel8.1
