@@ -5,6 +5,14 @@
   any_errors_fatal: true
 
   tasks:
+
+  - name: install extra packages
+    yum:
+      name:
+        - cloud-utils-growpart
+      state: latest
+      update_cache: true
+
   - name: Set Hostname
     hostname:
       name: "{{inventory_hostname}}"
@@ -18,9 +26,13 @@
     shell: 'growpart /dev/vda 1  && xfs_growfs /dev/vda1 && touch /var/lib/misc/fs-grown'
     args:
       creates: '/var/lib/misc/fs-grown'
+    notify:
+    - Reboot
 
   - name: firewalld is disabled
     systemd: name=firewalld enabled=no state=stopped
+
+  handlers:
 
   - name: Reboot
     reboot:
