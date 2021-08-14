@@ -29,9 +29,6 @@
     notify:
     - Reboot
 
-  - name: firewalld is disabled
-    systemd: name=firewalld enabled=no state=stopped
-
   handlers:
 
   - name: Reboot

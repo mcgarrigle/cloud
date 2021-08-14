@@ -1,0 +1,10 @@
+---
+- name: disable firewall
+  hosts: all
+  gather_facts: false
+  any_errors_fatal: true
+
+  tasks:
+
+  - name: firewalld is disabled
+    systemd: name=firewalld enabled=no state=stopped

@@ -9,16 +9,16 @@ def parameter(s):
     return f"--{s}"
 
 def expand(k, g):
-    tuples = [(parameter(k), v) for v in g]
+    tuples = [ (parameter(k), v) for v in g ]
     return flatten(tuples)
 
 def scalar(v):
     return isinstance(v, (str, int, float))
 
 def argv(args):
-    flags = [ parameter(k) for (k, v) in args.items() if v is None]
-    singles = [ (parameter(k), str(v)) for (k, v) in args.items() if scalar(v)]
-    groups = [ expand(k, v) for (k, v) in args.items() if type(v) is list]
+    flags   = [ parameter(k) for (k, v) in args.items() if v is None ]
+    singles = [ (parameter(k), str(v)) for (k, v) in args.items() if scalar(v) ]
+    groups  = [ expand(k, v) for (k, v) in args.items() if type(v) is list ]
     return flags + flatten(singles) + flatten(groups)
 
 def run(cmd, args):
