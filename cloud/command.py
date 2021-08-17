@@ -56,10 +56,21 @@ class Command:
 
     def _cmd_list(self, args):
         """ show status of all guests """
+        up = 1
         for guest in self.these(args):
             print(f"{guest.name: <15} {guest.state: <10} {guest.addr}")
+            if guest.addr == '-':
+                up = 0
+        exit(up)
 
     _cmd_ls = _cmd_list   # ls is synonym for list
+
+    def _cmd_wait(self, args):
+        """ wait for all guests to boot """
+        while True:
+           booting = any([ a.addr == '-' for a in self.these(args) ])
+           print(booting)
+           if not booting: break
 
     def _cmd_inventory(self, args):
         """ create ansible inventory of all guests """
