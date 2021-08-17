@@ -5,3 +5,4 @@ inventory
 machines/*
 index/*
 metadata/meta-data
+*.log
