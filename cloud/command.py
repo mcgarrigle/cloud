@@ -25,6 +25,7 @@ class Command:
         if domain:
             guest.state = domain.state
             guest.addr  = domain.addr
+            guest.mac   = domain.mac
         return guest
 
     def load_cloud_yaml(self, path):
@@ -58,7 +59,7 @@ class Command:
         """ show status of all guests """
         up = 1
         for guest in self.these(args):
-            print(f"{guest.name: <15} {guest.state: <10} {guest.addr}")
+            print(f"{guest.name: <15} {guest.state: <10} {guest.mac: <18} {guest.addr}")
             if guest.addr == '-':
                 up = 0
         exit(up)

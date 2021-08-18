@@ -19,6 +19,7 @@ class Guest:
         self.args       = defn.get('args', '')
         self.os         = self.read_os_metadata(os_name)
         self.state      = 'undefined'
+        self.mac        = '-'
         self.addr       = '-'
         if self.initialise == 'copy':
             self.initialise = 'clone'

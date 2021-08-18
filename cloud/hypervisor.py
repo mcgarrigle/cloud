@@ -30,7 +30,7 @@ class Hypervisor:
     def domain(self, name):
         try:
             return Domain(self.conn.lookupByName(name))
-        except: 
+        except libvirt.libvirtError as e:
             return None
 
     def create_instance(self, guest):
