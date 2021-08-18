@@ -12,11 +12,26 @@ from cloud.process import run
 class Hypervisor:
 
     def __init__(self):
+        # self.instance = {}
         self.conn = libvirt.open()
-        self.instance = {}
+        libvirt.registerErrorHandler(f=Hypervisor.__libvirt_callback, ctx=None)
+ 
+    # stop the client library from printing messages
+    #
+    # see: https://stackoverflow.com/questions/45541725/avoiding-console-prints-by-libvirt-qemu-python-apis
+
+    @staticmethod
+    def __libvirt_callback(userdata, err):
+        pass
 
     def domains(self):
         return [ Domain(d) for d in self.conn.listAllDomains() ]
+
+    def domain(self, name):
+        try:
+            return Domain(self.conn.lookupByName(name))
+        except libvirt.libvirtError as e:
+            return None
 
     def create_instance(self, guest):
         instance = { 

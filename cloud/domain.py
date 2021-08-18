@@ -1,12 +1,22 @@
 import libvirt
+import xml.etree.ElementTree as ET
 
 class Domain:
 
     def __init__(self, domain):
         self.name   = domain.name()
         self.state  = self._state(domain.state())
+        #em = root.findall("./devices/interface[@type='bridge']/mac")
+        #print(em[0].attrib['address'])
+
         if self.state == 'running':
             self.addr = self._addr(domain.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE))
+            tree = ET.fromstring(domain.XMLDesc(0))
+            mac = tree.findall("./devices/interface/mac")
+            if len(mac) > 0:
+                self.mac = mac[0].attrib['address']
+            else:
+                self.mac = '-'
         else:
             self.addr = '-'
 

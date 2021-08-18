@@ -9,9 +9,8 @@ from cloud.hypervisor import Hypervisor
 class Command:
 
     def __init__(self):
-        domains = [ (d.name, d) for d in Hypervisor().domains() ]
-        self.domains = dict(domains)
-        self.action  = Action()
+        self.hypervisor = Hypervisor()
+        self.action     = Action()
 
     def commands(self):
         functions = inspect.getmembers(Command, inspect.isfunction)
@@ -19,29 +18,31 @@ class Command:
         mapping = [ (m[0][5:], inspect.getdoc(m[1])) for m in methods ]
         return mapping
 
-    def __new_guest(self, name, defn):
-        if self.project:
-            name = f"{self.project}-{name}"
+    def new_guest(self, name, defn):
+        name = '-'.join(filter(None,[self.project, name]))
         guest = Guest(name, defn)
-        domain = self.domains.get(guest.name)
+        domain = self.hypervisor.domain(guest.name)
         if domain:
             guest.state = domain.state
             guest.addr  = domain.addr
+            guest.mac   = domain.mac
         return guest
 
-    def load_config(self, path):
+    def load_cloud_yaml(self, path):
         try:
             with open(path) as f:
-                self.config = yaml.safe_load(f)
+                return yaml.safe_load(f)
         except Exception as e:
             sys.exit(f"cannot open {path}\n{str(e)}")
-        self.version = self.config.get('version')
+
+    def load_config(self, config):
+        self.version = config.get('version')
         if self.version == '2':
             pass
         else:
             sys.exit(f"version {self.version} not supported")
-        self.project = self.config.get('project')
-        self.guests  = [self.__new_guest(n,g) for n,g in self.config['guests'].items() ]
+        self.project = config.get('project')
+        self.guests  = [self.new_guest(n,g) for n,g in config['guests'].items() ]
 
     def regex(self, glob):
         pattern = glob.replace('*', '.*')
@@ -58,7 +59,7 @@ class Command:
         """ show status of all guests """
         up = 1
         for guest in self.these(args):
-            print(f"{guest.name: <15} {guest.state: <10} {guest.addr}")
+            print(f"{guest.name: <15} {guest.state: <10} {guest.mac: <18} {guest.addr}")
             if guest.addr == '-':
                 up = 0
         exit(up)
@@ -108,7 +109,8 @@ class Command:
         self.action.go(args[0])
 
     def run(self, path, cmd, args = []):
-        self.load_config(path)
+        config = self.load_cloud_yaml(path)
+        self.load_config(config)
         method = f"self._cmd_{cmd}"
         fn = eval(method)
         fn(args)
