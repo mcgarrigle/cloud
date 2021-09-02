@@ -18,6 +18,7 @@ class Domain:
             else:
                 self.mac = '-'
         else:
+            self.mac  = '-'
             self.addr = '-'
 
     def _state(self, s):

@@ -2,11 +2,12 @@
 
 image="$1"
 name="$2"
-machine="machines/${name}.qcow2c"
-metadata="machines/${name}.iso"
+base="/var/lib/libvirt"
+machine="${base}/filesystems/${name}.qcow2c"
+metadata="${base}/filesystems/${name}.iso"
 
-cp "index/${image}" "${machine}"
-genisoimage -output ${metadata} -volid cidata -joliet -rock metadata/user-data metadata/meta-data
+cp "${image}" "${machine}"
+genisoimage -output ${metadata} -volid cidata -joliet -rock metadata/user-data metadata/meta-data metadata/network-config
 
 virt-install \
   --import \
@@ -19,8 +20,9 @@ virt-install \
   --os-variant centos7.0 \
   --virt-type kvm \
   --network default \
-  --graphics none \
-  --noautoconsole
+  --graphics none 
+  # --noautoconsole
+
 
 # virt-install \
   # --virt-type qemu \

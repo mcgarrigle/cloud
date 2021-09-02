@@ -44,8 +44,9 @@ class Image:
     def cloud_init(self):
         print(self.path)
         root = tempfile.TemporaryDirectory()
-        metapath = os.path.join(root.name, "meta-data")
-        userpath = os.path.join(root.name, "user-data")
+        metapath    = os.path.join(root.name, "meta-data")
+        userpath    = os.path.join(root.name, "user-data")
+        networkpath = os.path.join(root.name, "network-config")
         metadata = {
             'instance-id': secrets.token_hex(15),
             'local-hostname': self.guest.hostname
@@ -58,7 +59,7 @@ class Image:
             f"-input-charset utf-8 "
             f"-volid cidata "
             f"-rock "
-            f"{userpath} {metapath}"
+            f"{userpath} {metapath} /opt/cloud/metadata/network-config"
         )
 
     def write(self, path, data):
