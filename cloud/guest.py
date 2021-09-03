@@ -23,6 +23,7 @@ class Guest:
             self.initialise = 'clone'
         interfaces = defn.get('interfaces', {'eth0': {'connection': 'network=default'}})
         self.interfaces = [ Interface(n, d) for (n, d) in interfaces.items() ]
+        self.nameserver = defn.get('nameserver', {})
 
     def read_os_metadata(self, name):
         path = os.path.join(ROOT, "catalog", name + ".yaml")

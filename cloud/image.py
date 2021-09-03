@@ -48,11 +48,16 @@ class Image:
         }
         self.write(path, metadata)
 
+    def cloud_init_nameserver(self, config):
+        config['type'] = 'nameserver'
+        return config
+
     def cloud_init_network_config(self, path):
-        config = {
+        blob = {
             'version': 1, 'config': [ i.to_cloud_init_network_config() for i in self.guest.interfaces ]
         }
-        self.write(path, config)
+        blob['config'].append(self.cloud_init_nameserver(self.guest.nameserver))
+        self.write(path, blob)
 
     def cloud_init(self):
         root = tempfile.TemporaryDirectory()

@@ -27,6 +27,8 @@ class Command:
         except Exception as e:
             sys.exit(f"cannot open {path}\n{str(e)}")
 
+    # add domain status to a guest
+
     def status(self, guest):
         domain = self.hypervisor.domain(guest.name)
         if domain:
@@ -73,20 +75,17 @@ class Command:
     def _cmd_up(self, args):
         """ create and start guests """
         for guest in self.project.these(args):
-            guest = self.status(guest)
-            self.action.up(guest)
+            self.action.up(self.status(guest))
 
     def _cmd_stop(self, args):
         """ halt all guests """
         for guest in self.project.these(args):
-            guest = self.status(guest)
-            self.action.stop(guest)
+            self.action.stop(self.status(guest))
 
     def _cmd_down(self, args):
         """ destroy and undefine guests """
         for guest in self.project.these(args):
-            guest = self.status(guest)
-            self.action.down(guest)
+            self.action.down(self.status(guest))
 
     def _cmd_go(self, args):
         """ ssh to guest """
