@@ -16,16 +16,20 @@ class Interface:
         return self.connection
 
     def to_cloud_init_network_config(self):
-        blob = {
-          'name': self.name,
-          'type': 'physical',
-          'subnets': [
-              { 'type': 'static',
+        if self.bootproto == 'static':
+            subnet = { 
+                 'type': 'static',
                  'address': str(self.addr.ip),
                  'netmask': str(self.netmask),
                  'gateway': str(self.gateway)
                }
-          ]
+        else:
+            subnet = { 'type': self.bootproto }
+
+        blob = {
+          'name':    self.name,
+          'type':    'physical',
+          'subnets': [ subnet ]
         }
         return blob
 
