@@ -37,7 +37,7 @@ class Command:
 
     def load_config(self, config):
         self.version = config.get('version')
-        if self.version == '2':
+        if self.version == '3':
             pass
         else:
             sys.exit(f"version {self.version} not supported")

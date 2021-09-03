@@ -1,20 +1,18 @@
 import os, sys, yaml
 
 from cloud import *
+from cloud.interface import Interface
 
 class Guest:
 
     def __init__(self, name, defn):
-        os_name = defn.get('os')
-        if os_name is None:
-            sys.exit("os is unset")
+        os_name = defn.get('os') or sys.exit("os is unset")
         self.name       = name
         self.hostname   = defn.get('hostname', name)
         self.initialise = defn.get('initialise', defn.get('initialize', 'clone'))
         self.memory     = defn.get('memory', '1024')
         self.disks      = defn.get('disks', {'vda': '10G'})
         self.cores      = defn.get('cores', '1')
-        self.interfaces = defn.get('interfaces', {'eth0': 'network=default'})
         self.graphics   = defn.get('graphics', 'none')
         self.args       = defn.get('args', '')
         self.os         = self.read_os_metadata(os_name)
@@ -23,6 +21,10 @@ class Guest:
         self.addr       = '-'
         if self.initialise == 'copy':
             self.initialise = 'clone'
+        interfaces = defn.get('interfaces', {'eth0': {'connection': 'network=default'}})
+        self.interfaces = [ Interface(n, d) for (n, d) in interfaces.items() ]
+        for i in self.interfaces:
+            print(i.to_cloud_init_network_config())
 
     def read_os_metadata(self, name):
         path = os.path.join(ROOT, "catalog", name + ".yaml")

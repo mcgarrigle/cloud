@@ -41,25 +41,34 @@ class Image:
         else:
             return os.path.join(ROOT, "metadata", "user-data")
 
-    def cloud_init(self):
-        print(self.path)
-        root = tempfile.TemporaryDirectory()
-        metapath    = os.path.join(root.name, "meta-data")
-        userpath    = os.path.join(root.name, "user-data")
-        networkpath = os.path.join(root.name, "network-config")
+    def cloud_init_meta_data(self, path):
         metadata = {
             'instance-id': secrets.token_hex(15),
             'local-hostname': self.guest.hostname
         }
-        self.write(metapath, metadata)
-        shutil.copy(self.user_data_path(), userpath)
+        self.write(path, metadata)
+
+    def cloud_init_network_config(self, path):
+        config = {
+            'version': 1, 'config': [ i.to_cloud_init_network_config() for i in self.guest.interfaces ]
+        }
+        self.write(path, config)
+
+    def cloud_init(self):
+        root = tempfile.TemporaryDirectory()
+        meta_data_path      = os.path.join(root.name, "meta-data")
+        user_data_path      = os.path.join(root.name, "user-data")
+        network_config_path = os.path.join(root.name, "network-config")
+        shutil.copy(self.user_data_path(), user_data_path)
+        self.cloud_init_meta_data(meta_data_path)
+        self.cloud_init_network_config(network_config_path)
         os.system(f"genisoimage " 
             f"-joliet " 
             f"-output {self.path} "
             f"-input-charset utf-8 "
             f"-volid cidata "
             f"-rock "
-            f"{userpath} {metapath} /opt/cloud/metadata/network-config"
+            f"{user_data_path} {meta_data_path} {network_config_path}"
         )
 
     def write(self, path, data):

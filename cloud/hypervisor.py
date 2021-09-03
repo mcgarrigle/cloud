@@ -45,7 +45,7 @@ class Hypervisor:
             'os-type':       guest.os['type'],
             'os-variant':    guest.os['variant'],
             'disk':          [],
-            'network':       list(guest.interfaces.values())
+            'network':       [ i.to_virt_install() for i in guest.interfaces ]
         }
         return instance
 
@@ -96,6 +96,7 @@ class Hypervisor:
         rest = [ self.create_blank_disk(guest, device, size) for (device, size) in guest.disks.items() ]
         self.instance['disk'] = [ d.disk() for d  in (boot + rest) ]
         run('virt-install', self.instance)
+        # print(self.instance)
 
     def start(self, guest):
         os.system(f"virsh start --domain {guest.name}")
