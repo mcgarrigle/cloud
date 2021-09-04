@@ -9,11 +9,11 @@ class Domain:
 
         if self.state == 'running':
             tree = ET.fromstring(domain.XMLDesc(0))
-            mac = tree.findall("./devices/interface/mac")
-            if len(mac) > 0:
-                self.mac = mac[0].attrib['address']
-            else:
+            mac = tree.find("./devices/interface/mac")
+            if mac is None:
                 self.mac  = None
+            else:
+                self.mac = mac.attrib['address']
 
             nics = domain.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)
             if len(nics) > 0:
@@ -42,4 +42,4 @@ class Domain:
         if len(addrs) == 0:
             return None
         else:
-            return  addrs[0]['addr']
+            return addrs[0]['addr']

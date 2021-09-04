@@ -38,7 +38,6 @@ class Command:
     def status(self, guest):
         domain = self.hypervisor.domain(guest.name)
         if domain:
-            print(guest.addr)
             guest.state = domain.state
             guest.mac   = domain.mac
             guest.addr  = guest.addr or domain.addr
