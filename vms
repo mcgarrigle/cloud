@@ -21,10 +21,13 @@ def first(d):
 
 for domain in conn.listAllDomains():
     #metadata = domain.metadata(libvirt.VIR_DOMAIN_METADATA_ELEMENT, "http://spinup.io/instance")
-    nics = domain.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)
-    if len(nics) > 0:
-        nic = first(nics)
-        adr = nic['addrs'][0]['addr']
-        print(domain.name(),state(domain.state()), adr)
-    else:
-        print(domain.name(),state(domain.state()))
+    print(domain)
+    print(domain.state())
+    if domain.state() == libvirt.VIR_DOMAIN_RUNNING:
+        nics = domain.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)
+        if len(nics) > 0:
+            nic = first(nics)
+            adr = nic['addrs'][0]['addr']
+            print(domain.name(),state(domain.state()), adr)
+        else:
+            print(domain.name(),state(domain.state()))

@@ -27,14 +27,21 @@ class Command:
         except Exception as e:
             sys.exit(f"cannot open {path}\n{str(e)}")
 
+    def empty(self, p):
+        if p is None:
+            return('-')
+        else:
+            return str(p)
+
     # add domain status to a guest
 
     def status(self, guest):
         domain = self.hypervisor.domain(guest.name)
         if domain:
+            print(guest.addr)
             guest.state = domain.state
-            guest.addr  = domain.addr
             guest.mac   = domain.mac
+            guest.addr  = guest.addr or domain.addr
         return guest
 
     def _cmd_list(self, args):
@@ -42,7 +49,7 @@ class Command:
         up = 1
         for guest in self.project.these(args):
             guest = self.status(guest)
-            print(f"{guest.name: <15} {guest.state: <10} {guest.mac: <18} {guest.addr}")
+            print(f"{guest.name: <15} {guest.state: <10} {self.empty(guest.mac): <18} {self.empty(guest.addr)}")
             if guest.addr == '-':
                 up = 0
         exit(up)
@@ -60,6 +67,7 @@ class Command:
         """ create ansible inventory of all guests """
         inv = {}
         for guest in self.project.guests:
+            guest = self.status(guest)
             inv[guest.hostname] = { 'ansible_host': guest.addr }
         var = {}
         print(yaml.dump({ 'all': { 'hosts': inv, 'vars': var }}, default_flow_style=False))
@@ -68,9 +76,9 @@ class Command:
 
     def _cmd_ssh_config(self, args):
         """ create ssh_config file """
-        for guest in self.guests:
+        for guest in self.project.guests:
             print(f"Host {guest.hostname}")
-            print(f"  HostName {guest.addr}")
+            print(f"  HostName {self.empty(guest.addr)}")
 
     def _cmd_up(self, args):
         """ create and start guests """

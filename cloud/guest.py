@@ -17,13 +17,19 @@ class Guest:
         self.args       = defn.get('args', '')
         self.os         = self.read_os_metadata(os_name)
         self.state      = 'undefined'
-        self.mac        = '-'
-        self.addr       = '-'
         if self.initialise == 'copy':
             self.initialise = 'clone'
         interfaces = defn.get('interfaces', {'eth0': {'connection': 'network=default'}})
         self.interfaces = [ Interface(n, d) for (n, d) in interfaces.items() ]
         self.nameserver = defn.get('nameserver', {})
+
+        # mac and addr refer to the first interface only
+        
+        self.mac  = None
+        if self.interfaces[0].bootproto == 'static':
+            self.addr = str(self.interfaces[0].addr.ip)
+        else:
+            self.addr = None
 
     def read_os_metadata(self, name):
         path = os.path.join(ROOT, "catalog", name + ".yaml")
