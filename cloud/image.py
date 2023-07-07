@@ -19,7 +19,7 @@ class Image:
         else:
             self.driver = 'disk'
             extension = '.qcow2'
-        self.path = os.path.join(IMAGE_ROOT, guest.name + '_' + device + extension)
+        self.path = os.path.join(CLOUD_POOL, guest.name + '_' + device + extension)
 
     def create(self):
         os.system(f"qemu-img create -f qcow2 {self.path} {self.size}")

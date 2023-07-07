@@ -50,7 +50,7 @@ class Hypervisor:
         return instance
 
     def create_cloud(self, image):
-        image.link(image.guest.os['path'])
+        image.clone(image.guest.os['path'])
         cdrom = Image(image.guest, "sr0")
         cdrom.cloud_init()
         return [image, cdrom]
