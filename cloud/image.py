@@ -22,14 +22,14 @@ class Image:
         self.path = os.path.join(CLOUD_POOL, guest.name + '_' + device + extension)
 
     def create(self):
-        os.system(f"qemu-img create -f qcow2 {self.path} {self.size}")
+        os.system(f"qemu-img create -q -f qcow2 {self.path} {self.size}")
 
     def clone(self, image):
         shutil.copyfile(image, self.path)
-        os.system(f"qemu-img resize {self.path} {self.size}")
+        os.system(f"qemu-img resize -q {self.path} {self.size}")
 
     def link(self, image):
-        os.system(f"qemu-img create -f qcow2 -b {image} {self.path} {self.size}")
+        os.system(f"qemu-img create -q -f qcow2 -b {image} {self.path} {self.size}")
 
     def disk(self):
       return f"{self.path},device={self.driver}"
@@ -70,11 +70,10 @@ class Image:
         self.cloud_init_network_config(network_config_path)
         os.system(f"genisoimage " 
             f"-quiet " 
+            f"-rock "
             f"-joliet " 
             f"-output {self.path} "
-            f"-input-charset utf-8 "
             f"-volid CIDATA "
-            f"-rock "
             f"{user_data_path} {meta_data_path} {network_config_path}"
         )
 
