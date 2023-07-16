@@ -106,7 +106,7 @@ class Hypervisor:
         os.system(f"virsh destroy --domain {guest.name}")
         os.system(f"virsh undefine --domain {guest.name}")
         if guest.initialise == 'cloud':
-            guest.disks["sr0"] = 0
+            guest.disks['sr0'] = 0
         for device in  guest.disks.keys():
             image = Image(guest, device)
             image.delete()
