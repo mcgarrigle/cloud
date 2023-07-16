@@ -69,10 +69,11 @@ class Image:
         self.cloud_init_meta_data(meta_data_path)
         self.cloud_init_network_config(network_config_path)
         os.system(f"genisoimage " 
+            f"-quiet " 
             f"-joliet " 
             f"-output {self.path} "
             f"-input-charset utf-8 "
-            f"-volid cidata "
+            f"-volid CIDATA "
             f"-rock "
             f"{user_data_path} {meta_data_path} {network_config_path}"
         )

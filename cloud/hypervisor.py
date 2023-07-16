@@ -42,7 +42,6 @@ class Hypervisor:
             'name':          guest.name,
             'memory':        guest.memory,
             'vcpus':         guest.cores, 
-            'os-type':       guest.os['type'],
             'os-variant':    guest.os['variant'],
             'disk':          [],
             'network':       [ i.to_virt_install() for i in guest.interfaces ]

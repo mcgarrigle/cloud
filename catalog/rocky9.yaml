@@ -4,5 +4,5 @@ description: Rocky 9.2 Cloud Image
 location: /home/images/Rocky-9.2-x86_64-dvd.iso
 path: /home/images/Rocky-9-GenericCloud-Base-9.2-20230513.0.x86_64.qcow2
 format: qcow2
-type: Linux
-variant: rhel8.1
+variant: rocky9
+# type: Linux
