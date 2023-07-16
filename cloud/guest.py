@@ -1,5 +1,7 @@
 import os, sys, yaml
 
+from types import SimpleNamespace
+
 from cloud import *
 from cloud.interface import Interface
 
@@ -34,7 +36,8 @@ class Guest:
     def read_os_metadata(self, name):
         path = os.path.join(ROOT, "catalog", name + ".yaml")
         with open(path, 'r') as f:
-            return yaml.safe_load(f.read())
+            metadata =  yaml.safe_load(f.read())
+            return SimpleNamespace(**metadata)
 
     def __str__(self):
         return f"{self.name} {self.state} {self.addr}"
