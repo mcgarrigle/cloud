@@ -35,11 +35,13 @@ class Image:
       return f"{self.path},device={self.driver}"
 
     def user_data_path(self):
-        local = os.path.join(os.environ['HOME'], ".cloud_config")
-        if os.path.isfile(local):
-            return local
-        else:
-            return os.path.join(ROOT, "metadata", "user-data")
+        home = os.environ['HOME']
+        path1 = os.path.join(home, ".config", "cloud", "user-data")
+        path2 = os.path.join(home, ".cloud_config")
+        for path in [ path1, path2 ]:
+          if os.path.isfile(path):
+              return path
+        return os.path.join(ROOT, "metadata", "user-data")
 
     def cloud_init_meta_data(self, path):
         metadata = {
@@ -61,10 +63,9 @@ class Image:
 
     def cloud_init(self):
         root = tempfile.TemporaryDirectory()
+        user_data_path      = self.user_data_path()
         meta_data_path      = os.path.join(root.name, "meta-data")
-        user_data_path      = os.path.join(root.name, "user-data")
         network_config_path = os.path.join(root.name, "network-config")
-        shutil.copy(self.user_data_path(), user_data_path)
         self.cloud_init_meta_data(meta_data_path)
         self.cloud_init_network_config(network_config_path)
         os.system(f"genisoimage " 
