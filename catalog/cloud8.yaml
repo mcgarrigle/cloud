@@ -1,8 +1,8 @@
 ---
 name: cloud8
-description: CentOS 8 Cloud Image
+description: "Rocky 8 Cloud Image"
 path: /var/lib/libvirt/images/cloud8.qcow2
-location: http://pi4.mac.wales/centos8/
+location: /var/lib/libvirt/images/Rocky-8.4-x86_64-dvd1.iso
 format: qcow2c
 type: Linux
 variant: centos8

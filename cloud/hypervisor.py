@@ -45,12 +45,12 @@ class Hypervisor:
             'os-type':       guest.os['type'],
             'os-variant':    guest.os['variant'],
             'disk':          [],
-            'network':       list(guest.interfaces.values())
+            'network':       [ i.to_virt_install() for i in guest.interfaces ]
         }
         return instance
 
     def create_cloud(self, image):
-        image.link(image.guest.os['path'])
+        image.clone(image.guest.os['path'])
         cdrom = Image(image.guest, "sr0")
         cdrom.cloud_init()
         return [image, cdrom]
