@@ -22,22 +22,24 @@ class Image:
         self.path = os.path.join(CLOUD_POOL, guest.name + '_' + device + extension)
 
     def create(self):
-        os.system(f"qemu-img create -f qcow2 {self.path} {self.size}")
+        os.system(f"qemu-img create -q -f qcow2 {self.path} {self.size}")
 
     def clone(self, image):
         shutil.copyfile(image, self.path)
-        os.system(f"qemu-img resize {self.path} {self.size}")
+        os.system(f"qemu-img resize -q {self.path} {self.size}")
 
     def link(self, image):
-        os.system(f"qemu-img create -f qcow2 -b {image} {self.path} {self.size}")
+        os.system(f"qemu-img create -q -f qcow2 -b {image} {self.path} {self.size}")
 
     def disk(self):
-      return f"{self.path},device={self.driver}"
+        return f"{self.path},device={self.driver}"
+ 
+    def xdg_config_home(self):
+        return os.environ['XDG_CONFIG_HOME'] or os.path.join(os.environ['HOME'], ".config")
 
     def user_data_path(self):
-        home = os.environ['HOME']
-        path1 = os.path.join(home, ".config", "cloud", "user-data")
-        path2 = os.path.join(home, ".cloud_config")
+        path1 = os.path.join(self.xdg_config_home(), "cloud", "user-data")
+        path2 = os.path.join(os.environ['HOME'], ".cloud_config")
         for path in [ path1, path2 ]:
           if os.path.isfile(path):
               return path
@@ -69,11 +71,11 @@ class Image:
         self.cloud_init_meta_data(meta_data_path)
         self.cloud_init_network_config(network_config_path)
         os.system(f"genisoimage " 
+            f"-quiet " 
+            f"-rock "
             f"-joliet " 
             f"-output {self.path} "
-            f"-input-charset utf-8 "
-            f"-volid cidata "
-            f"-rock "
+            f"-volid CIDATA "
             f"{user_data_path} {meta_data_path} {network_config_path}"
         )
 
