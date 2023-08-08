@@ -32,12 +32,14 @@ class Image:
         os.system(f"qemu-img create -q -f qcow2 -b {image} {self.path} {self.size}")
 
     def disk(self):
-      return f"{self.path},device={self.driver}"
+        return f"{self.path},device={self.driver}"
+ 
+    def xdg_config_home(self):
+        return os.environ['XDG_CONFIG_HOME'] or os.path.join(os.environ['HOME'], ".config")
 
     def user_data_path(self):
-        home = os.environ['HOME']
-        path1 = os.path.join(home, ".config", "cloud", "user-data")
-        path2 = os.path.join(home, ".cloud_config")
+        path1 = os.path.join(self.xdg_config_home(), "cloud", "user-data")
+        path2 = os.path.join(os.environ['HOME'], ".cloud_config")
         for path in [ path1, path2 ]:
           if os.path.isfile(path):
               return path
