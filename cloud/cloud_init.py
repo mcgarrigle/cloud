@@ -13,8 +13,11 @@ class CloudInit(BlockDevice):
 
     def __init__(self, guest):
         self.guest  = guest
+        self.device = 'sr0'
         self.driver = 'cdrom'
         self.path = os.path.join(CLOUD_POOL, guest.name + '_sr0.iso')
+
+    def commit(self):
         temp = tempfile.TemporaryDirectory()
         user_data_path      = Config.cloud_config_path()
         meta_data_path      = os.path.join(temp.name, "meta-data")

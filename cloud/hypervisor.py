@@ -50,53 +50,17 @@ class Hypervisor:
         }
         return instance
 
-    def create_cloud(self, image):
-        image.clone(image.guest.os.path)
-        cdrom = Image(image.guest, "sr0")
-        cdrom.cloud_init()
-        return [image, cdrom]
-            
-    def create_clone(self, image):
-        image.clone(image.guest.os.path)
-        return [image]
-            
-    def create_link(self, image):
-        image.link(image.guest.os.path)
-        return [image]
-            
-    def create_install(self, image):
-        self.instance['location']   = image.guest.os.location
-        self.instance['extra-args'] = image.guest.args
-        image.create()
-        return [image]
-    
-    def create_boot_disk(self, guest, device, size):
-        image = Image(guest, device, size)
-        if guest.initialise == 'cloud':
-            return self.create_cloud(image)
-        elif guest.initialise == 'clone':
-            return self.create_clone(image)
-        elif guest.initialise == 'link':
-            return self.create_link(image)
-        elif guest.initialise == 'install':
-            return self.create_install(image)
-        else:
-            sys.exit(f"initialise mode '{guest.initialise}' unknown")
-
-    def create_blank_disk(self, guest, device, size):
-        image = Image(guest, device, size)
-        image.create()
-        return image
-
     def create(self, guest):
         print(f"create {guest.name}")
         boot_device = next(iter(guest.disks))
         boot_size = guest.disks.pop(boot_device)
-        # boot = self.create_boot_disk(guest, boot_device, boot_size)
         boot       = Image(guest, boot_device, boot_size)
         cloud_init = CloudInit(guest)
         rest       = [ Disk(guest, device, size) for (device, size) in guest.disks.items() ]
         all_disks  = [ boot, cloud_init ] + rest
+        for disk in all_disks:
+            print(f"block device {disk.device} {disk.path}")
+            disk.commit()
         self.instance = self.create_instance(guest)
         self.instance['disk'] = [ d.disk() for d  in all_disks ]
         run('virt-install', self.instance)

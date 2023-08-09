@@ -10,4 +10,6 @@ class Disk(BlockDevice):
         self.size   = size
         self.driver = 'disk'
         self.path = os.path.join(CLOUD_POOL, guest.name + '_' + device + '.qcow2')
+
+    def commit(self): 
         os.system(f"qemu-img create -q -f qcow2 {self.path} {self.size}")
