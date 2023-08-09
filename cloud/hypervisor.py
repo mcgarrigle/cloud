@@ -5,9 +5,11 @@ import shutil
 import libvirt
 
 from cloud import *
-from cloud.domain  import Domain
-from cloud.image   import Image
-from cloud.process import run
+from cloud.domain     import Domain
+from cloud.image      import Image
+from cloud.disk       import Disk
+from cloud.cloud_init import CloudInit
+from cloud.process    import run
 
 class Hypervisor:
 
@@ -88,12 +90,15 @@ class Hypervisor:
 
     def create(self, guest):
         print(f"create {guest.name}")
-        device = next(iter(guest.disks))
-        size = guest.disks.pop(device)
+        boot_device = next(iter(guest.disks))
+        boot_size = guest.disks.pop(boot_device)
+        # boot = self.create_boot_disk(guest, boot_device, boot_size)
+        boot       = Image(guest, boot_device, boot_size)
+        cloud_init = CloudInit(guest)
+        rest       = [ Disk(guest, device, size) for (device, size) in guest.disks.items() ]
+        all_disks  = [ boot, cloud_init ] + rest
         self.instance = self.create_instance(guest)
-        boot = self.create_boot_disk(guest, device, size)
-        rest = [ self.create_blank_disk(guest, device, size) for (device, size) in guest.disks.items() ]
-        self.instance['disk'] = [ d.disk() for d  in (boot + rest) ]
+        self.instance['disk'] = [ d.disk() for d  in all_disks ]
         run('virt-install', self.instance)
 
     def start(self, guest):
