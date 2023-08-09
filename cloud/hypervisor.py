@@ -53,7 +53,7 @@ class Hypervisor:
     def create(self, guest):
         print(f"create {guest.name}")
         boot_device = next(iter(guest.disks))
-        boot_size = guest.disks.pop(boot_device)
+        boot_size  = guest.disks.pop(boot_device)
         boot       = Image(guest, boot_device, boot_size)
         cloud_init = CloudInit(guest)
         rest       = [ Disk(guest, device, size) for (device, size) in guest.disks.items() ]
@@ -61,6 +61,7 @@ class Hypervisor:
         for disk in all_disks:
             print(f"block device {disk.device} {disk.path}")
             disk.commit()
+
         self.instance = self.create_instance(guest)
         self.instance['disk'] = [ d.disk() for d  in all_disks ]
         run('virt-install', self.instance)
@@ -74,8 +75,6 @@ class Hypervisor:
     def destroy(self, guest):
         os.system(f"virsh destroy --domain {guest.name}")
         os.system(f"virsh undefine --domain {guest.name}")
-        if guest.initialise == 'cloud':
-            guest.disks['sr0'] = 0
+        CloudInit(guest).delete()
         for device in  guest.disks.keys():
-            image = Image(guest, device)
-            image.delete()
+            Disk(guest, device).delete()
