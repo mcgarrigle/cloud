@@ -8,6 +8,9 @@ from cloud import *
 
 class Cache:
 
+    def __init__(self, url):
+        self.url = url
+
     def download_file(self, url, path):
         if os.path.isfile(path):
             return
@@ -26,10 +29,10 @@ class Cache:
         md5 = hashlib.md5(url.encode('utf-8')).hexdigest()
         return os.path.join(CLOUD_IMAGES, md5, basename)
 
-    def image(self, url):
-        parts = urlparse(url)
+    def path(self):
+        parts = urlparse(self.url)
         if parts.scheme == '':
-            return url
-        path = self.cache_path(url)
-        self.download_file(url, path)
+            return self.url
+        path = self.cache_path(self.url)
+        self.download_file(self.url, path)
         return path

@@ -19,6 +19,6 @@ class Image(BlockDevice):
         self.path   = os.path.join(CLOUD_POOL, guest.name + '_' + device + '.qcow2')
 
     def commit(self):
-        image = Cache().image(self.guest.os.url)
-        shutil.copyfile(image, self.path)
+        image = Cache(self.guest.os.url)
+        shutil.copyfile(image.path(), self.path)
         os.system(f"qemu-img resize -q {self.path} {self.size}")
