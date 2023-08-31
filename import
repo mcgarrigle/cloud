@@ -1,0 +1,22 @@
+#!/bin/bash
+
+name="$1"
+base="/var/lib/libvirt"
+
+machine="${base}/filesystems/${name}_vda.qcow2"
+metadata="${base}/filesystems/${name}_sr0.iso"
+
+ls -l $machine $metadata
+
+virt-install \
+  --import \
+  --name "${name}" \
+  --memory 4096 \
+  --vcpus 4 \
+  --disk ${machine},device=disk \
+  --disk ${metadata},device=cdrom \
+  --os-variant centos7.0 \
+  --virt-type kvm \
+  --network bridge \
+  --graphics none \
+  --noautoconsole

@@ -1,9 +1,8 @@
 ---
 name: ubuntu-server
 description: Ubuntu Focal Linux
-location: /var/lib/libvirt/images/ubuntu-20.04.1-live-server-amd64.iso
-url: https://cloud-images.ubuntu.com/releases/23.04/release/ubuntu-23.04-server-cloudimg-amd64.img
-path: /var/lib/libvirt/images/ubuntu-server-20.04.qcow2
+dvd: /var/lib/libvirt/images/ubuntu-20.04.1-live-server-amd64.iso
+url: /var/lib/libvirt/images/9ef14cb05d5d5dcd2d0d7e302f50fda9/ubuntu-23.04-server-cloudimg-amd64-disk-kvm.img
 format: img
 type: Linux
 variant: ubuntu19.04

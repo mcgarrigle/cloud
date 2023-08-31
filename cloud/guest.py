@@ -34,7 +34,7 @@ class Guest:
             self.addr = None
 
     def read_os_metadata(self, name):
-        path = os.path.join(ROOT, "catalog", name + ".yaml")
+        path = os.path.join(BASE, "catalog", name + ".yaml")
         with open(path, 'r') as f:
             metadata =  yaml.safe_load(f.read())
             return SimpleNamespace(**metadata)

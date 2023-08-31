@@ -1,11 +1,11 @@
-   69  dnf install python3
-   75  dnf install python3-devel
-   80  dnf install python3-libvirt.x86_64
-   86  dnf search python3
-   87  dnf search python3|grep dns
-   91  dnf install python3-pyaml
-   92  dnf install python3-yaml
-   93  dnf install python3-pyaml
-   94  dnf install python3-yaml
-   95  dnf install python3-dns
+dnf install python3-libvirt.x86_64
+dnf install python3-devel
+dnf install python3-dns
+dnf install python3-yaml
+
+
+  572  yum install libguestfs
+  573  ll
+  574  yum whatprovides virt-customize
+  575  yum install guestfs-tools
 

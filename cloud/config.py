@@ -1,5 +1,7 @@
 import os
 
+from cloud import *
+
 class Config:
 
     @staticmethod
@@ -13,4 +15,4 @@ class Config:
         for path in [ path1, path2 ]:
           if os.path.isfile(path):
               return path
-        return os.path.join(ROOT, "metadata", "user-data")
+        return os.path.join(BASE, "metadata", "user-data")
