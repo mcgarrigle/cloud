@@ -1,27 +1,38 @@
-Prerequisites:
+Prerequisites
+-------------
 
-dnf install epel-release
-dnf install python3
-dnf install qemu-kvm
-dnf install libvirt
-dnf install virt-install
-dnf install libvirt-devel
-dnf install gcc
-dnf install python3-devel
+dnf install \
+  qemu-kvm \
+  libvirt-devel \
+  virt-install \
+  python3-devel \
+  python3-libvirt \
+  python3-dns \
+  python3-yaml
 
-pip3 install pyaml
-pip3 install libvirt-python
-pip3 install dnspython
+User configuration
+------------------
 
-Bridging
+Set permissions:
 
-# virsh net-define bridge.xml
-# virsh net-start bridge
-# virsh net-autostart bridge
-# virsh net-list --all
+  sudo usermod -a -G kvm,qemu $USER
+  sudo mkdir -p        /var/lib/libvirt/filesystems /var/lib/libvirt/images
+  sudo chown qemu:qemu /var/lib/libvirt/filesystems /var/lib/libvirt/images
+  sudo chmod og=rwx    /var/lib/libvirt/filesystems /var/lib/libvirt/images
 
-Disk Partition
+Add to your bash profile:
 
-# yum install  cloud-utils-growpart
-# growpart /dev/vda 1
-# xfs_growfs /dev/vda1
+  export LIBVIRT_DEFAULT_URI='qemu:///system'
+
+Bridging:
+
+  virsh net-define bridge.xml
+  virsh net-start bridge
+  virsh net-autostart bridge
+  virsh net-list --all
+
+Guest disk partition:
+
+  yum install  cloud-utils-growpart
+  growpart /dev/vda 1
+  xfs_growfs /dev/vda1

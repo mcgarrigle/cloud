@@ -20,7 +20,6 @@ def main(args):
         p = subparsers.add_parser(command, help=helptext)
         p.add_argument('arguments', nargs='?')
     args = parser.parse_args()
-
     cmd.run(args.config, args.command, args.arguments)
 
 if __name__ == "__main__":

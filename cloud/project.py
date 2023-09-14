@@ -1,3 +1,4 @@
+import sys
 import re
 
 from cloud.guest import Guest
